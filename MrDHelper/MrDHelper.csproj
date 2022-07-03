@@ -13,6 +13,8 @@
     <PackageTags>extention; method; extension methods; mrdhelper</PackageTags>
     <PackageReleaseNotes>First release including some sample code.</PackageReleaseNotes>
     <Authors>Nguyễn Quốc Đạt</Authors>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
