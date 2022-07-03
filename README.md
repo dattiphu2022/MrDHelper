@@ -130,9 +130,9 @@ Use this space to list resources you find helpful and would like to give credit 
 [contributors-url]: https://github.com/dattiphu2022/MrDHelper/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dattiphu2022/MrDHelper?style=for-the-badge
 [forks-url]: https://github.com/dattiphu2022/MrDHelper/network/members
-[stars-shield]: https://img.shields.io/github/stars//dattiphu2022/MrDHelper?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/dattiphu2022/MrDHelper?style=for-the-badge
 [stars-url]: https://github.com/dattiphu2022/MrDHelper/stargazers
-[issues-shield]: https://img.shields.io/github/issues//dattiphu2022/MrDHelper?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/dattiphu2022/MrDHelper?style=for-the-badge
 [issues-url]: https://github.com/dattiphu2022/MrDHelper/issues
 [license-shield]: https://img.shields.io/github/license/dattiphu2022/MrDHelper?style=for-the-badge
 [license-url]: https://github.com/dattiphu2022/MrDHelper/blob/master/LICENSE.txt
