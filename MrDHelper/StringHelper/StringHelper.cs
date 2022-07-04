@@ -25,5 +25,24 @@ namespace MrDHelper
 
             return builder.ToString();
         }
+        /// <summary>
+        /// Short way of "string.IsNullOrEmpty(input)"
+        /// </summary>
+        /// <param name="input">string to check</param>
+        /// <returns><see cref="Boolean"/></returns>
+        public static bool IsNullOrEmpty(this string? input)
+        {
+            return string.IsNullOrEmpty(input);
+        }
+
+        /// <summary>
+        /// Short way of "string.IsNullOrWhiteSpace(input)"
+        /// </summary>
+        /// <param name="input">string to check</param>
+        /// <returns><see cref="Boolean"/></returns>
+        public static bool IsNullOrWhiteSpace(this string? input)
+        {
+            return string.IsNullOrWhiteSpace(input);
+        }
     }
 }
