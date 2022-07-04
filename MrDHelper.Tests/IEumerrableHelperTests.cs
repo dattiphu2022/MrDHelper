@@ -48,7 +48,9 @@ namespace MrDHelper.Tests
             Action<int>? action = null; 
 
             Assert.That(sum, Is.EqualTo(0));
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.DoesNotThrow(() => ints.ForEach(action));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         [Test]
@@ -58,7 +60,9 @@ namespace MrDHelper.Tests
 
             Action<int>? action = null;
 
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Throws<ArgumentNullException>(() => ints.ForEach(action, shouldThrowException: true));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
     }
 }

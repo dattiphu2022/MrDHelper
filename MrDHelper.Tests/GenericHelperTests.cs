@@ -40,10 +40,12 @@ namespace MrDHelper.Tests
             string? stringToTest2 = string.Empty;
 
             var isNull = stringToTest.IsNull();
-            var isNull2 = stringToTest.IsNull();
-
-            Assert.That(isNull, Is.False);
-            Assert.That(isNull2, Is.False);
+            var isNull2 = stringToTest2.IsNull();
+            Assert.Multiple(() =>
+            {
+                Assert.That(isNull, Is.False);
+                Assert.That(isNull2, Is.False);
+            });
         }
 
         [Test]
@@ -53,10 +55,12 @@ namespace MrDHelper.Tests
             string? stringToTest2 = string.Empty;
 
             var isNull = stringToTest.NotNull();
-            var isNull2 = stringToTest.NotNull();
-
-            Assert.That(isNull, Is.True);
-            Assert.That(isNull2, Is.True);
+            var isNull2 = stringToTest2.NotNull();
+            Assert.Multiple(() =>
+            {
+                Assert.That(isNull, Is.True);
+                Assert.That(isNull2, Is.True);
+            });
         }
     }
 }

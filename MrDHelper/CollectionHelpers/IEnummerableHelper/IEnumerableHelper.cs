@@ -38,10 +38,12 @@ namespace MrDHelper
                 return;
             }
             //if we go here so far, there are must not errors.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             foreach (T item in enumeration)
             {
                 action(item);
             }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }
 }

@@ -15,7 +15,9 @@ namespace MrDHelper.Tests
         {
             IList<string>? Strings = null;
 
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Throws<ArgumentNullException>(()=> Strings.AddDummyItemsToMaximumCountOf(10, string.Empty));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         [Test]
@@ -56,7 +58,9 @@ namespace MrDHelper.Tests
 
             items.AddDummyItemsToMaximumCountOf(10, dummyItem);
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(items.All((x) => x.Equals(itemToVerify)), Is.True);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         private class DummyTest
