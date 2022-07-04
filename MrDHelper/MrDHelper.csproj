@@ -11,11 +11,11 @@
     <RepositoryUrl>https://github.com/dattiphu2022/MrDHelper.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extention; method; extension methods; mrdhelper</PackageTags>
-    <PackageReleaseNotes>Update TaskHelper.</PackageReleaseNotes>
+    <PackageReleaseNotes>Some codes were deprecated.</PackageReleaseNotes>
     <Authors>Nguyễn Quốc Đạt</Authors>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
