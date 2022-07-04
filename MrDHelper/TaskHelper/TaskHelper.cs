@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MrdHelpers
+namespace MrDHelper
 {
     public static class TaskHelper
     {
@@ -17,6 +17,10 @@ namespace MrdHelpers
         public static TResult RunSync<TResult>(this Task<TResult> task)
         {
             return RunSync(() => task);
+        }
+        public static void RunSync(this Task task)
+        {
+            RunSync(() => task);
         }
         public static TResult RunSync<TResult>(this Func<Task<TResult>> func)
         {
