@@ -14,10 +14,14 @@ namespace MrDHelper
     {
         private static readonly TaskFactory _myTaskFactory = new TaskFactory(CancellationToken.None,
             TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
+        [Obsolete("This method is deprecated, please use RunSync(Func<Task<TResult>>) instead.")]
         public static TResult RunSync<TResult>(this Task<TResult> task)
         {
             return RunSync(() => task);
         }
+
+        [Obsolete("This method is deprecated, please use RunSync(Func<Task>) instead.")]
         public static void RunSync(this Task task)
         {
             RunSync(() => task);

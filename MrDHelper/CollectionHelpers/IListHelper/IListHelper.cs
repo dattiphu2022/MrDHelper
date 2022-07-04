@@ -26,10 +26,9 @@ namespace MrDHelper
             {
                 throw new ArgumentNullException(nameof(collection));
             }
-
-            if (collectionFinalCount < collection.Count)
+            if (collectionFinalCount < collection.Count || collectionFinalCount < 0)
             {
-                throw new InvalidOperationException($"{nameof(collectionFinalCount)}.Value can't < {nameof(collection)}.Count");
+                throw new InvalidOperationException($"{nameof(collectionFinalCount)}.Value can't < {nameof(collection)}.Count, Or < 0");
             }
 
             var itemCountToAdd = collectionFinalCount - collection.Count;
