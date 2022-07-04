@@ -14,7 +14,10 @@ namespace MrdHelpers
     {
         private static readonly TaskFactory _myTaskFactory = new TaskFactory(CancellationToken.None,
             TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
-
+        public static TResult RunSync<TResult>(this Task<TResult> task)
+        {
+            return RunSync(() => task);
+        }
         public static TResult RunSync<TResult>(this Func<Task<TResult>> func)
         {
             var cultureUi = CultureInfo.CurrentUICulture;
