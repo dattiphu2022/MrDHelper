@@ -53,7 +53,7 @@ This project is providing "extension methods" that are usually used in short way
 2. ```using MrdHelpr```
 3. Use the extension methods that you want.
 
-```
+```c#
 IEnumerable<T>?.ForEach<T>(Action<T>);
 
 IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
