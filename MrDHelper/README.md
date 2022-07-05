@@ -81,5 +81,5 @@ Use this space to list resources you find helpful and would like to give credit 
 [license-url]: https://github.com/dattiphu2022/MrDHelper/blob/master/LICENSE.txt
 [nugetdownload-shield]: https://img.shields.io/nuget/dt/MrDHelper?style=for-the-badge
 [nugetdownload-url]: https://www.nuget.org/packages/MrDHelper
-[nugetversion-shield]: https://img.shields.io/nuget/vpre/MrDHelper?style=for-the-badge
+[nugetversion-shield]: https://img.shields.io/nuget/v/MrDHelper?style=for-the-badge
 [nugetversion-url]: https://www.nuget.org/packages/MrDHelper#versions-body-tab
