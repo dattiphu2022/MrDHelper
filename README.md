@@ -5,6 +5,8 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
+[![Nuget downloads][nugetdownload-shield]][nugetdownload-url]
+[![Nuget version][nugetversion-shield]][nugetversion-url]
 
 
 
@@ -51,6 +53,18 @@ This project is providing "extension methods" that are usually used in short way
 2. ```using MrdHelpr```
 3. Use the extension methods that you want.
 
+```
+IEnumerable<T>?.ForEach<T>(Action<T>);
+
+IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
+
+<T>.IsNull(); <T>.NotNull();
+
+string.GetMd5(); "string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
+
+TaskHelper.RunSync<TResult>(Func<Task<T>, TResult>);
+
+```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
@@ -136,3 +150,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [issues-url]: https://github.com/dattiphu2022/MrDHelper/issues
 [license-shield]: https://img.shields.io/github/license/dattiphu2022/MrDHelper?style=for-the-badge
 [license-url]: https://github.com/dattiphu2022/MrDHelper/blob/master/LICENSE.txt
+[nugetdownload-shield]: https://img.shields.io/nuget/dt/MrDHelper?style=for-the-badge
+[nugetdownload-url]: https://www.nuget.org/packages/MrDHelper
+[nugetversion-shield]: https://img.shields.io/nuget/vpre/MrDHelper?style=for-the-badge
+[nugetversion-url]: https://www.nuget.org/packages/MrDHelper#versions-body-tab
