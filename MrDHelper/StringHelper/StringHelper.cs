@@ -44,5 +44,24 @@ namespace MrDHelper
         {
             return string.IsNullOrWhiteSpace(input);
         }
+        /// <summary>
+        /// Short way of "!string.IsNullOrEmpty(input)"
+        /// </summary>
+        /// <param name="input">string to check</param>
+        /// <returns><see cref="Boolean"/></returns>
+        public static bool NotNullOrEmpty(this string? input)
+        {
+            return !string.IsNullOrEmpty(input);
+        }
+
+        /// <summary>
+        /// Short way of "!string.IsNullOrWhiteSpace(input)"
+        /// </summary>
+        /// <param name="input">string to check</param>
+        /// <returns><see cref="Boolean"/></returns>
+        public static bool NotNullOrWhiteSpace(this string? input)
+        {
+            return !string.IsNullOrWhiteSpace(input);
+        }
     }
 }
