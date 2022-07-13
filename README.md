@@ -55,16 +55,17 @@ This project is providing "extension methods" that are usually used in short way
 
 ```c#
 IEnumerable<T>?.ForEach<T>(Action<T>);
-IEnumerable<T>?.ForEachAsync<T>(Fun<T,Task>);
+IEnumerable<T>?.ForEachAsync<T>(Fun<T,Task>) //awaitable, eg: await IEnumerable<T>?.ForEachAsync(async (t)=> { await Task.Delay(10); });
 
 IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
 
 <T>.IsNull(); <T>.NotNull();
 
-string.GetMd5(); "string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
+"string".GetMd5();
+"string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
+"string".NotNullOrEmpty(); "string".NotNullOrWhiteSpace();
 
-TaskHelper.RunSync<TResult>(Func<Task<T>, TResult>);
-
+TaskHelper.RunSync<TResult>(Func<Task<TResult>, TResult>); // eg: var result = TaskHelper.RunSync<TResult>(()=>GetResultAsync());
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
 

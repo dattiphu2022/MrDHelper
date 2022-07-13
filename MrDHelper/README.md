@@ -11,7 +11,7 @@
 ## About The Project
 
 This project is providing "extension methods" that are usually used in short way.
-
+All methods have its own tests, check it on source code and help me to improve it if you can. Thank you!
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -21,15 +21,17 @@ This project is providing "extension methods" that are usually used in short way
 3. Use the extension methods that you want.
 ```c#
 IEnumerable<T>?.ForEach<T>(Action<T>);
-IEnumerable<T>?.ForEachAsync<T>(Fun<T,Task>);
+IEnumerable<T>?.ForEachAsync<T>(Fun<T,Task>) //awaitable, eg: await IEnumerable<T>?.ForEachAsync(async (t)=> { await Task.Delay(10); });
 
 IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
 
 <T>.IsNull(); <T>.NotNull();
 
-string.GetMd5(); "string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
+"string".GetMd5();
+"string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
+"string".NotNullOrEmpty(); "string".NotNullOrWhiteSpace();
 
-TaskHelper.RunSync<TResult>(Func<Task<T>, TResult>);
+TaskHelper.RunSync<TResult>(Func<Task<TResult>, TResult>); // eg: var result = TaskHelper.RunSync<TResult>(()=>GetResultAsync());
 ```
 
 
