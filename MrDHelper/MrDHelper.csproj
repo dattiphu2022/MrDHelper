@@ -11,12 +11,16 @@
     <RepositoryUrl>https://github.com/dattiphu2022/MrDHelper.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extention; method; extension methods; mrdhelper</PackageTags>
-    <PackageReleaseNotes>added: "string".NotNullOrEmpty(); "string".NotNullOrWhiteSpace();)
+    <PackageReleaseNotes>added: 
+bool?.IsFalse()
+bool?.IsTrue()
+bool?.NotFalse()
+bool?.NotTrue()
 Update: README.md for more details in documentation.</PackageReleaseNotes>
     <Authors>Nguyễn Quốc Đạt</Authors>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
   </PropertyGroup>
 
   <ItemGroup>
