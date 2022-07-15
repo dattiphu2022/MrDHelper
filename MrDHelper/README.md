@@ -17,7 +17,7 @@ All methods have its own tests, check it on source code and help me to improve i
 ## Usage
 
 1. Reference to MrdHelper
-2. ```using MrdHelpr```
+2. ```using MrdHelper```
 3. Use the extension methods that you want.
 ```c#
 IEnumerable<T>?.ForEach<T>(Action<T>);
@@ -26,6 +26,9 @@ IEnumerable<T>?.ForEachAsync<T>(Fun<T,Task>) //awaitable, eg: await IEnumerable<
 IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
 
 <T>.IsNull(); <T>.NotNull();
+
+bool?.IsFalse(); bool?.IsTrue();
+bool?.NotFalse(); bool?.NotTrue();
 
 "string".GetMd5();
 "string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
