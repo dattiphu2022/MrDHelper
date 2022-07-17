@@ -3,12 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MrDHelper;
 
 namespace MrDHelper.Tests
 {
     [TestFixture]
     public class IEumerrableHelperTests
     {
+        #region IEnumerable Setup
+        private static IEnumerable<int> GetYieldReturnCollection()
+        {
+            IEnumerable<int>? ints = new[] { 1, 2, 3 };
+            foreach (var item in ints)
+            {
+                yield return item;
+            }
+        }
+        #endregion
+
         #region ForEach_Synchonous_Tests
 
         [Test]
@@ -47,11 +59,14 @@ namespace MrDHelper.Tests
             var sum = 0;
 
             Action<int>? action = null;
+            Assert.Multiple(() =>
+            {
 
 #pragma warning disable CS8604 // Possible null reference argument.
-            Assert.DoesNotThrow(() => ints.ForEach(action));
+                Assert.DoesNotThrow(() => ints.ForEach(action));
 #pragma warning restore CS8604 // Possible null reference argument.
-            Assert.That(sum, Is.EqualTo(0));
+                Assert.That(sum, Is.EqualTo(0));
+            });
         }
 
         [Test]
@@ -64,6 +79,17 @@ namespace MrDHelper.Tests
 #pragma warning disable CS8604 // Possible null reference argument.
             Assert.Throws<ArgumentNullException>(() => ints.ForEach(action, shouldThrowException: true));
 #pragma warning restore CS8604 // Possible null reference argument.
+        }
+
+        [Test]
+        public void ForEach_CollectionFromYieldReturn_ShouldWorkNormaly()
+        {
+            var yieldReturnedCollection = GetYieldReturnCollection();
+            
+            var sum = 0;
+            yieldReturnedCollection.ForEach((i) => sum += i);
+
+            Assert.That(sum, Is.EqualTo(6));
         }
         #endregion
 
@@ -123,6 +149,45 @@ namespace MrDHelper.Tests
 
             Assert.ThrowsAsync<ArgumentNullException>(() => ints.ForEachAsync(null, shouldThrowException: true));
         }
+        [Test]
+        public async Task ForEachAsync_CollectionFromYieldReturn_ShouldWorkNormaly()
+        {
+            var yieldReturnedCollection = GetYieldReturnCollection();
+
+            var sum = 0;
+            await yieldReturnedCollection.ForEachAsync(async (i) =>
+            { 
+                sum += i;
+                await Task.Delay(10);
+            });
+
+            Assert.That(sum, Is.EqualTo(6));
+        }
+        #endregion
+
+        #region Add_Tests
+        [Test]
+        public void Add_ColelctionNull_ShouldThrowArgumentNullException()
+        {
+            IEnumerable<int>? ints = null;
+
+
+            //Assert.Throws<ArgumentNullException>(() => ints.AddLast(4));
+
+            var addedResult = ints.AddLast(4);
+            Assert.That(addedResult, Is.Null);
+        }
+        //[Test]
+        //public void Add_ColelctionNull_ShouldThrowArgumentNullException()
+        //{
+        //    IEnumerable<int> ints = GetYieldReturnCollection();
+
+        //    var addedCollection = ints.AddLast(4);
+
+        //    var resultToVerify = new[] { 1, 2, 3, 4 };
+
+        //    Assert.That(addedCollection, Is.EqualTo(resultToVerify));
+        //}
         #endregion
     }
 }
