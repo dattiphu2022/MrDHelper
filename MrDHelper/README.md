@@ -37,7 +37,24 @@ bool?.NotFalse(); bool?.NotTrue();
 TaskHelper.RunSync<TResult>(Func<Task<TResult>, TResult>); // eg: var result = TaskHelper.RunSync<TResult>(()=>GetResultAsync());
 ```
 
+New in 1.0.8
+```c#
+var someClass = new SomeClass();
+var cell = SomeClass.ConvertToCell(someClass);
+cell[nameof(SomeClass.Property1)] = newValue;
+var otherSomeClass = cell.ConvertTo<SomeClass>();
 
+-----------
+var sqlConnectionString = new SqlServerConnectionStringBuilder{
+	Server = server,
+    Database = database,
+    UserId = userId,
+    Password = passWord,
+    Trusted_Connection = trusted,
+    ConnectViaIP = viaIp
+}
+var finalString = sqlConnectionString.FinalConnectionString;
+```
 
 
 <!-- ROADMAP -->

@@ -12,15 +12,13 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>extention; method; extension methods; mrdhelper</PackageTags>
     <PackageReleaseNotes>added: 
-bool?.IsFalse()
-bool?.IsTrue()
-bool?.NotFalse()
-bool?.NotTrue()
+Cell model for storing "object's properties" easily.
+Add ConnectionStringBuilder with simplyfied properties.
 Update: README.md for more details in documentation.</PackageReleaseNotes>
     <Authors>Nguyễn Quốc Đạt</Authors>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
   </PropertyGroup>
 
   <ItemGroup>
