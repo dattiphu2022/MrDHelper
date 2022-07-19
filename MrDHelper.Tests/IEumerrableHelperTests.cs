@@ -165,29 +165,5 @@ namespace MrDHelper.Tests
         }
         #endregion
 
-        #region Add_Tests
-        [Test]
-        public void Add_ColelctionNull_ShouldThrowArgumentNullException()
-        {
-            IEnumerable<int>? ints = null;
-
-
-            //Assert.Throws<ArgumentNullException>(() => ints.AddLast(4));
-
-            var addedResult = ints.AddLast(4);
-            Assert.That(addedResult, Is.Null);
-        }
-        //[Test]
-        //public void Add_ColelctionNull_ShouldThrowArgumentNullException()
-        //{
-        //    IEnumerable<int> ints = GetYieldReturnCollection();
-
-        //    var addedCollection = ints.AddLast(4);
-
-        //    var resultToVerify = new[] { 1, 2, 3, 4 };
-
-        //    Assert.That(addedCollection, Is.EqualTo(resultToVerify));
-        //}
-        #endregion
     }
 }
