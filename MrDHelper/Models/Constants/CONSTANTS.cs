@@ -7,5 +7,6 @@ namespace MrDHelper
     public class CONSTANTS
     {
         public static readonly string MSSQLServerServiceName = "MSSQLSERVER";
+        public static readonly string SQLExpressServiceName = "SQLEXPRESS";
     }
 }

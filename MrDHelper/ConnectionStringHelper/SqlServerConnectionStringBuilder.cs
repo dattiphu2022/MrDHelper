@@ -1,6 +1,7 @@
 ﻿namespace MrDHelper
 {
     using System;
+    using System.ComponentModel;
     using System.Data.SqlClient;
     using System.ServiceProcess;
 
@@ -22,8 +23,16 @@
     /// <br/><br/>
     /// If <see cref="SqlServerConnectionStringBuilder.Trusted_Connection"/> then do NOT set <see cref="SqlServerConnectionStringBuilder.UserId"/><see cref="SqlServerConnectionStringBuilder.Password"/>
     /// </summary>
-    public class SqlServerConnectionStringBuilder : IConnectionString
+    public class SqlServerConnectionStringBuilder : IConnectionString, INotifyPropertyChanged, IDisposable
     {
+        private string? server;
+        private string? database;
+        private string? userId;
+        private string? password;
+        private bool trusted_Connection;
+        private bool connectViaIP;
+        private bool disposedValue;
+
         public string FinalConnectionString
         {
             get => new ConnectionStringBuilder()
@@ -56,7 +65,18 @@
         /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
         /// <br/><br/>
         /// </summary>
-        public string? Server { get; set; }
+        public string? Server
+        {
+            get => server;
+            set
+            {
+                if (server != value)
+                {
+                    server = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Server)));
+                }
+            }
+        }
 
         /// <summary>
         /// <b>[Standard Security]</b><br/>
@@ -75,7 +95,18 @@
         /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
         /// <br/><br/>
         /// </summary>
-        public string? Database { get; set; }
+        public string? Database
+        {
+            get => database;
+            set
+            {
+                if (database != value)
+                {
+                    database = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Database)));
+                }
+            }
+        }
 
         /// <summary>
         /// <b>[Standard Security]</b><br/>
@@ -94,7 +125,18 @@
         /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
         /// <br/><br/>
         /// </summary>
-        public string? UserId { get; set; }
+        public string? UserId
+        {
+            get => userId;
+            set
+            {
+                if (userId != value)
+                {
+                    userId = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UserId)));
+                }
+            }
+        }
 
 
         /// <summary>
@@ -114,18 +156,54 @@
         /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
         /// <br/><br/>
         /// </summary>
-        public string? Password { get; set; }
+        public string? Password
+        {
+            get => password;
+            set
+            {
+                if (password != value)
+                {
+                    password = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Password)));
+                }
+            }
+        }
 
         /// <summary>
         /// If true, this will causes the <see cref="SqlServerConnectionStringBuilder.UserId"/> and <see cref="SqlServerConnectionStringBuilder.Password"/> builds skipped.
         /// </summary>
-        public bool Trusted_Connection { get; set; }
+        public bool Trusted_Connection
+        {
+            get => trusted_Connection;
+            set
+            {
+                if (trusted_Connection != value)
+                {
+                    trusted_Connection = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Trusted_Connection)));
+                }
+            }
+        }
 
         /// <summary>
         /// If true, this will causes the <see cref="SqlServerConnectionStringBuilder.Server"/> and <see cref="SqlServerConnectionStringBuilder.Database"/> have difference way of generating.
         /// </summary>
-        public bool ConnectViaIP { get; set; }
+        [Obsolete()]
+        public bool ConnectViaIP
+        {
+            get => connectViaIP;
+            set
+            {
+                if (connectViaIP != value)
+                {
+                    connectViaIP = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectViaIP)));
+                }
+            }
+        }
         private bool isLocal => ConnectViaIP.NotTrue();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Validate the <see cref="SqlServerConnectionStringBuilder.FinalConnectionString"/> with given properties.
@@ -170,7 +248,8 @@
             for (int i = 0; i < service.Length; i++)
             {
 
-                if (service[i].DisplayName.ToString() == CONSTANTS.MSSQLServerServiceName)
+                if (service[i].DisplayName.Contains(CONSTANTS.MSSQLServerServiceName) ||
+                    service[i].DisplayName.Contains(CONSTANTS.SQLExpressServiceName))
                 {
                     findSQLServer = true;
 
@@ -195,6 +274,40 @@
             {
                 return false;
             }
+        }
+        ~SqlServerConnectionStringBuilder()
+        {
+            Dispose();
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+                PropertyChanged = null;
+                server = null;
+                database = null;
+                userId = null;
+                password = null;
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~SqlServerConnectionStringBuilder()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 
