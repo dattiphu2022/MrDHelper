@@ -1,5 +1,9 @@
 ﻿namespace MrDHelper
 {
+    using System;
+    using System.Data.SqlClient;
+    using System.ServiceProcess;
+
     /// <summary>
     /// <b>[Standard Security]</b><br/>
     /// Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
@@ -122,10 +126,81 @@
         /// </summary>
         public bool ConnectViaIP { get; set; }
         private bool isLocal => ConnectViaIP.NotTrue();
+
+        /// <summary>
+        /// Validate the <see cref="SqlServerConnectionStringBuilder.FinalConnectionString"/> with given properties.
+        /// </summary>
+        /// <returns><see cref="Tuple{T1, T2}"/>
+        /// <br/>
+        /// (true, string.empty)||<br/>
+        /// (false,"error message")</returns>
+        public (bool validateResult, string message) ValidateConnectionString()
+        {
+            if (IsMSSQLServerServiceRunning().NotTrue())
+            {
+                return (false, "Không tìm thấy MSSQLSERVER service đang chạy.");
+            }
+            SqlConnection? connection = null;
+
+            try
+            {
+                connection = new SqlConnection(FinalConnectionString);
+                connection.Open();
+                return (true, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+            finally
+            {
+                connection?.Close();
+                connection = null;
+                connection?.Dispose();
+            }
+        }
+
+        private bool IsMSSQLServerServiceRunning()
+        {
+            ServiceController[] service = ServiceController.GetServices();
+            bool findSQLServer = false;
+
+            bool isrunning = false;
+
+            for (int i = 0; i < service.Length; i++)
+            {
+
+                if (service[i].DisplayName.ToString() == CONSTANTS.MSSQLServerServiceName)
+                {
+                    findSQLServer = true;
+
+                    if (service[i].Status == ServiceControllerStatus.Running)
+                    {
+                        isrunning = true;
+                    }
+                    else
+                    {
+                        isrunning = false;
+                    }
+                    break;
+
+                }
+
+            }
+            if (findSQLServer && isrunning == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     public interface IConnectionString
     {
         public string FinalConnectionString { get; }
+        public (bool validateResult, string message) ValidateConnectionString();
     }
 }
