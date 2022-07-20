@@ -7,7 +7,7 @@ namespace MrDHelper
     /// <summary>
     /// String extension methods.
     /// </summary>
-    public static class StringHelper
+    public static partial class StringHelper
     {
         /// <summary>
         /// Get MD5 hash from a string.
