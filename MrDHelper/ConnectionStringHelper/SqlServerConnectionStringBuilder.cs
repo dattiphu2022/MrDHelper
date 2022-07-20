@@ -4,6 +4,7 @@
     using System.ComponentModel;
     using System.Data.SqlClient;
     using System.ServiceProcess;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// <b>[Standard Security]</b><br/>
@@ -201,7 +202,7 @@
                 }
             }
         }
-        private bool isLocal => ConnectViaIP.NotTrue();
+        private bool isLocal => true;//ConnectViaIP.NotTrue();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -212,18 +213,19 @@
         /// <br/>
         /// (true, string.empty)||<br/>
         /// (false,"error message")</returns>
-        public (bool validateResult, string message) ValidateConnectionString()
+        public async Task<(bool validateResult, string message)> ValidateConnectionString()
         {
-            if (IsMSSQLServerServiceRunning().NotTrue())
+            var isSQLServiceRunning = await CheckMSSQLServerServiceRunning();
+            if (isSQLServiceRunning.NotTrue())
             {
-                return (false, "Không tìm thấy MSSQLSERVER service đang chạy.");
+                return (false, "Không tìm thấy SQL service đang chạy.");
             }
             SqlConnection? connection = null;
 
             try
             {
                 connection = new SqlConnection(FinalConnectionString);
-                connection.Open();
+                await connection.OpenAsync();
                 return (true, string.Empty);
             }
             catch (Exception ex)
@@ -238,7 +240,7 @@
             }
         }
 
-        private bool IsMSSQLServerServiceRunning()
+        private async Task<bool> CheckMSSQLServerServiceRunning()
         {
             ServiceController[] service = ServiceController.GetServices();
             bool findSQLServer = false;
@@ -314,6 +316,6 @@
     public interface IConnectionString
     {
         public string FinalConnectionString { get; }
-        public (bool validateResult, string message) ValidateConnectionString();
+        public Task<(bool validateResult, string message)> ValidateConnectionString();
     }
 }
