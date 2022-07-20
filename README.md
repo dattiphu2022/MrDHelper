@@ -71,7 +71,7 @@ bool?.NotFalse(); bool?.NotTrue();
 TaskHelper.RunSync<TResult>(Func<Task<TResult>, TResult>); // eg: var result = TaskHelper.RunSync<TResult>(()=>GetResultAsync());
 ```
 
-New in 1.0.8
+New in 1.0.8+1.0.9
 ```c#
 var someClass = new SomeClass();
 var cell = SomeClass.ConvertToCell(someClass);
@@ -87,6 +87,7 @@ var sqlConnectionString = new SqlServerConnectionStringBuilder{
     Trusted_Connection = trusted,
     ConnectViaIP = viaIp
 }
+bool validateResult = sqlConnectionString.ValidateConnectionString();
 var finalString = sqlConnectionString.FinalConnectionString;
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
