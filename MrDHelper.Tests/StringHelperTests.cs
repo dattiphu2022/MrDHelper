@@ -16,5 +16,22 @@ namespace MrDHelper.Tests
 
             Assert.That(caculatedMd5, Is.EqualTo(md5ToVerify));
         }
+
+        [Test]
+        [TestCase("")]
+        [TestCase("1")]
+        [TestCase("123")]
+        [TestCase("123$")]
+        [TestCase("123$3434")]
+        [TestCase(@"123$3434-09l'ksdf\we[}/?")]
+        public void EncryptDecryptShouldWorkNormaly(string input)
+        {
+            string password = "password";
+
+            var encryped = input.EncryptToBase64(password);
+            var decrypted = encryped.DecryptFromBase64(password);
+
+            Assert.That(decrypted, Is.EqualTo(input));
+        }
     }
 }
