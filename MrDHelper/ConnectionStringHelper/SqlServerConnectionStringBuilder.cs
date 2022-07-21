@@ -49,6 +49,18 @@
             .AddProperty($"Password={Password}", Trusted_Connection.IsFalse() && Password.NotNullOrWhiteSpace())
             .Build();
         }
+        public string ConnectionStringForNotExistedDatabase
+        {
+            get => new ConnectionStringBuilder()
+            .AddProperty($"Data Source={Server}", !isLocal && Server.NotNullOrWhiteSpace())
+            .AddProperty($"Server={Server}", isLocal && Server.NotNullOrWhiteSpace())
+
+            .AddProperty($"Trusted_Connection=True", isLocal && Trusted_Connection.IsTrue())
+
+            .AddProperty($"User Id={UserId}", Trusted_Connection.IsFalse() && UserId.NotNullOrWhiteSpace())
+            .AddProperty($"Password={Password}", Trusted_Connection.IsFalse() && Password.NotNullOrWhiteSpace())
+            .Build();
+        }
         /// <summary>
         /// <b>[Standard Security]</b><br/>
         /// Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
