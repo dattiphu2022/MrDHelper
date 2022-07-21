@@ -225,7 +225,7 @@
         /// <br/>
         /// (true, string.empty)||<br/>
         /// (false,"error message")</returns>
-        public async Task<(bool validateResult, string message)> ValidateConnectionString()
+        public async Task<(bool validateResult, string message)> ValidateConnectionString(bool newDatabaseName = false)
         {
             var isSQLServiceRunning = await CheckMSSQLServerServiceRunning();
             if (isSQLServiceRunning.NotTrue())
@@ -236,7 +236,14 @@
 
             try
             {
-                connection = new SqlConnection(FinalConnectionString);
+                if (newDatabaseName.NotTrue())
+                {
+                    connection = new SqlConnection(FinalConnectionString);
+                }
+                else
+                {
+                    connection = new SqlConnection(ConnectionStringForNotExistedDatabase);
+                }
                 await connection.OpenAsync();
                 return (true, string.Empty);
             }
@@ -328,6 +335,6 @@
     public interface IConnectionString
     {
         public string FinalConnectionString { get; }
-        public Task<(bool validateResult, string message)> ValidateConnectionString();
+        public Task<(bool validateResult, string message)> ValidateConnectionString(bool newDatabaseName);
     }
 }
