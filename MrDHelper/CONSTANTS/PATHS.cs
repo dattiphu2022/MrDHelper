@@ -7,9 +7,13 @@ namespace MrDHelper
 {
     public class PATHS
     {
+        private static string? parentFolderWithoutSlash => System.IO.Directory.GetParent(BasePath)?.FullName;
+        public static string? ParrentFolderPath => System.IO.Directory.GetParent(parentFolderWithoutSlash ?? BasePath)?.FullName;
+        
         public static string BasePath = AppDomain.CurrentDomain.BaseDirectory;
-        public static string DataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-        public static string BinFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Bin");
+        
+        public static string DataFolderPath = Path.Combine(BasePath, "Data");
+        public static string BinFolderPath = Path.Combine(BasePath, "Bin");
         public static string GetFilePath(string folder, string fileName)
         {
             if (fileName.IsNullOrWhiteSpace())
