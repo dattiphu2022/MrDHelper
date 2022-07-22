@@ -20,7 +20,8 @@
     /// Server=myServerName,myPortNumber;Database=myDataBase;User Id=myUsername;Password=myPassword;
     /// <br/><br/>
     /// <b>[Connect via an IP address]</b><br/>
-    /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
+    /// [fails in real app]Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword; <br/>
+    /// Data Source=192.168.10.234,1433;Initial Catalog=Farm;Integrated Security=False;User ID=sa;Password=123456$;
     /// <br/><br/>
     /// If <see cref="SqlServerConnectionStringBuilder.Trusted_Connection"/> then do NOT set <see cref="SqlServerConnectionStringBuilder.UserId"/><see cref="SqlServerConnectionStringBuilder.Password"/>
     /// </summary>
@@ -40,9 +41,10 @@
             .AddProperty($"Data Source={Server}", !isLocal && Server.NotNullOrWhiteSpace())
             .AddProperty($"Server={Server}", isLocal && Server.NotNullOrWhiteSpace())
 
-            .AddProperty($"Network Library=DBMSSOCN;Initial Catalog={Database}", !isLocal && Database.NotNullOrWhiteSpace())
+            .AddProperty($"Initial Catalog={Database}", !isLocal && Database.NotNullOrWhiteSpace())
             .AddProperty($"Database={Database}", isLocal && Database.NotNullOrWhiteSpace())
 
+            .AddProperty($"Integrated Security=False", !isLocal && Trusted_Connection.IsFalse())
             .AddProperty($"Trusted_Connection=True", isLocal && Trusted_Connection.IsTrue())
 
             .AddProperty($"User Id={UserId}", Trusted_Connection.IsFalse() && UserId.NotNullOrWhiteSpace())
@@ -55,6 +57,7 @@
             .AddProperty($"Data Source={Server}", !isLocal && Server.NotNullOrWhiteSpace())
             .AddProperty($"Server={Server}", isLocal && Server.NotNullOrWhiteSpace())
 
+            .AddProperty($"Integrated Security=False", !isLocal && Trusted_Connection.IsFalse())
             .AddProperty($"Trusted_Connection=True", isLocal && Trusted_Connection.IsTrue())
 
             .AddProperty($"User Id={UserId}", Trusted_Connection.IsFalse() && UserId.NotNullOrWhiteSpace())
@@ -75,7 +78,8 @@
         /// Server=myServerName,myPortNumber;Database=myDataBase;User Id=myUsername;Password=myPassword;
         /// <br/><br/>
         /// <b>[Connect via an IP address]</b><br/>
-        /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
+        /// [fails in real app]Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword; <br/>
+        /// Data Source=192.168.10.234,1433;Initial Catalog=Farm;Integrated Security=False;User ID=sa;Password=123456$;
         /// <br/><br/>
         /// </summary>
         public string? Server
@@ -105,7 +109,8 @@
         /// Server=myServerName,myPortNumber;Database=myDataBase;User Id=myUsername;Password=myPassword;
         /// <br/><br/>
         /// <b>[Connect via an IP address]</b><br/>
-        /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
+        /// [fails in real app]Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword; <br/>
+        /// Data Source=192.168.10.234,1433;Initial Catalog=Farm;Integrated Security=False;User ID=sa;Password=123456$;
         /// <br/><br/>
         /// </summary>
         public string? Database
@@ -135,7 +140,8 @@
         /// Server=myServerName,myPortNumber;Database=myDataBase;User Id=myUsername;Password=myPassword;
         /// <br/><br/>
         /// <b>[Connect via an IP address]</b><br/>
-        /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
+        /// [fails in real app]Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword; <br/>
+        /// Data Source=192.168.10.234,1433;Initial Catalog=Farm;Integrated Security=False;User ID=sa;Password=123456$;
         /// <br/><br/>
         /// </summary>
         public string? UserId
@@ -166,7 +172,8 @@
         /// Server=myServerName,myPortNumber;Database=myDataBase;User Id=myUsername;Password=myPassword;
         /// <br/><br/>
         /// <b>[Connect via an IP address]</b><br/>
-        /// Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword;
+        /// [fails in real app]Data Source=190.190.200.100,1433;Network Library=DBMSSOCN;Initial Catalog=myDataBase;User ID=myUsername;Password=myPassword; <br/>
+        /// Data Source=192.168.10.234,1433;Initial Catalog=Farm;Integrated Security=False;User ID=sa;Password=123456$;
         /// <br/><br/>
         /// </summary>
         public string? Password
@@ -201,7 +208,6 @@
         /// <summary>
         /// If true, this will causes the <see cref="SqlServerConnectionStringBuilder.Server"/> and <see cref="SqlServerConnectionStringBuilder.Database"/> have difference way of generating.
         /// </summary>
-        [Obsolete()]
         public bool ConnectViaIP
         {
             get => connectViaIP;
@@ -214,7 +220,7 @@
                 }
             }
         }
-        private bool isLocal => true;//ConnectViaIP.NotTrue();
+        private bool isLocal => ConnectViaIP.NotTrue();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -227,11 +233,6 @@
         /// (false,"error message")</returns>
         public async Task<(bool validateResult, string message)> ValidateConnectionString(bool newDatabaseName = false)
         {
-            var isSQLServiceRunning = await CheckMSSQLServerServiceRunning();
-            if (isSQLServiceRunning.NotTrue())
-            {
-                return (false, "Không tìm thấy SQL service đang chạy.");
-            }
             SqlConnection? connection = null;
 
             try
@@ -258,43 +259,68 @@
                 connection?.Dispose();
             }
         }
+        public static async Task<(bool validateResult, string message)> ValidateConnectionString(string conString)
+        {
+            SqlConnection? connection = null;
 
+            try
+            {
+                if (conString.NotNullOrWhiteSpace())
+                {
+                    connection = new SqlConnection(conString);
+                    await connection.OpenAsync();
+                    return (true, string.Empty);
+                }
+                return (false, "Connectionstring is null or white space.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+            finally
+            {
+                connection?.Close();
+                connection = null;
+                connection?.Dispose();
+            }
+        }
         private async Task<bool> CheckMSSQLServerServiceRunning()
         {
-            ServiceController[] service = ServiceController.GetServices();
-            bool findSQLServer = false;
+            return true;
+            //ServiceController[] service = ServiceController.GetServices();
+            //bool findSQLServer = false;
 
-            bool isrunning = false;
+            //bool isrunning = false;
 
-            for (int i = 0; i < service.Length; i++)
-            {
+            //for (int i = 0; i < service.Length; i++)
+            //{
 
-                if (service[i].DisplayName.Contains(CONSTANTS.MSSQLServerServiceName) ||
-                    service[i].DisplayName.Contains(CONSTANTS.SQLExpressServiceName))
-                {
-                    findSQLServer = true;
+            //    if (service[i].DisplayName.Contains(CONSTANTS.MSSQLServerServiceName) ||
+            //        service[i].DisplayName.Contains(CONSTANTS.SQLExpressServiceName))
+            //    {
+            //        findSQLServer = true;
 
-                    if (service[i].Status == ServiceControllerStatus.Running)
-                    {
-                        isrunning = true;
-                    }
-                    else
-                    {
-                        isrunning = false;
-                    }
-                    break;
+            //        if (service[i].Status == ServiceControllerStatus.Running)
+            //        {
+            //            isrunning = true;
+            //        }
+            //        else
+            //        {
+            //            isrunning = false;
+            //        }
+            //        break;
 
-                }
+            //    }
 
-            }
-            if (findSQLServer && isrunning == true)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            //}
+            //if (findSQLServer && isrunning == true)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
         ~SqlServerConnectionStringBuilder()
         {
