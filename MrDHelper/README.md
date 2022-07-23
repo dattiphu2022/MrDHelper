@@ -10,7 +10,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project is providing "extension methods" that are usually used in short way.
+This project is providing some "extension methods" that are usually used in short way.
 All methods have its own tests, check it on source code and help me to improve it if you can. Thank you!
 
 <!-- USAGE EXAMPLES -->
