@@ -6,8 +6,27 @@ namespace MrDHelper
     {
         public object? this[string propertyName]
         {
-            get { return Datas[propertyName]; }
-            set { Datas[propertyName] = value; }
+            get {
+                try
+                {
+                    return Datas[propertyName];
+                }
+                catch (System.Exception)
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                try
+                {
+                    Datas[propertyName] = value;
+                }
+                catch (System.Exception)
+                {
+                    Datas.Add(propertyName, value);
+                }; 
+            }
         }
         public int ColSpan { get; set; } = 1;
         public int RowSpan { get; set; } = 1;
