@@ -18,7 +18,6 @@ namespace MrDHelper
         /// <param name="collectionFinalCount"></param>
         /// <param name="fillValue"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
         public static void AddDummyItemsToMaximumCountOf<T>(this IList<T> collection,
             int collectionFinalCount, T fillValue)
         {
@@ -28,7 +27,7 @@ namespace MrDHelper
             }
             if (collectionFinalCount < collection.Count || collectionFinalCount < 0)
             {
-                throw new InvalidOperationException($"{nameof(collectionFinalCount)}.Value can't < {nameof(collection)}.Count, Or < 0");
+                return;
             }
 
             var itemCountToAdd = collectionFinalCount - collection.Count;
