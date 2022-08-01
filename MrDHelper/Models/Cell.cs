@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace MrDHelper
+﻿namespace MrDHelper
 {
-    public class Cell
+    using System;
+    using System.Collections.Generic;
+    public class Cell : IDisposable
     {
         public object? this[string propertyName]
         {
@@ -31,7 +31,11 @@ namespace MrDHelper
         public int ColSpan { get; set; } = 1;
         public int RowSpan { get; set; } = 1;
         public string Title { get; set; } = string.Empty;
-        public Dictionary<string, object?> Datas { get; set; } = new Dictionary<string, object?>();
+        public Dictionary<string, object?>? Datas { get; set; } = new Dictionary<string, object?>();
 
+        public void Dispose()
+        {
+            Datas = null;
+        }
     }
 }
