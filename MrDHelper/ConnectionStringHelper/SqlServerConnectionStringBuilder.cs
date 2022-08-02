@@ -38,14 +38,14 @@
         public string FinalConnectionString
         {
             get => new ConnectionStringBuilder()
-            .AddProperty($"Data Source={Server}", !isLocal && Server.NotNullOrWhiteSpace())
-            .AddProperty($"Server={Server}", isLocal && Server.NotNullOrWhiteSpace())
+            .AddProperty($"Data Source={Server}", !IsLocal && Server.NotNullOrWhiteSpace())
+            .AddProperty($"Server={Server}", IsLocal && Server.NotNullOrWhiteSpace())
 
-            .AddProperty($"Initial Catalog={Database}", !isLocal && Database.NotNullOrWhiteSpace())
-            .AddProperty($"Database={Database}", isLocal && Database.NotNullOrWhiteSpace())
+            .AddProperty($"Initial Catalog={Database}", !IsLocal && Database.NotNullOrWhiteSpace())
+            .AddProperty($"Database={Database}", IsLocal && Database.NotNullOrWhiteSpace())
 
-            .AddProperty($"Integrated Security=False", !isLocal && Trusted_Connection.IsFalse())
-            .AddProperty($"Trusted_Connection=True", isLocal && Trusted_Connection.IsTrue())
+            .AddProperty($"Integrated Security=False", !IsLocal && Trusted_Connection.IsFalse())
+            .AddProperty($"Trusted_Connection=True", IsLocal && Trusted_Connection.IsTrue())
 
             .AddProperty($"User Id={UserId}", Trusted_Connection.IsFalse() && UserId.NotNullOrWhiteSpace())
             .AddProperty($"Password={Password}", Trusted_Connection.IsFalse() && Password.NotNullOrWhiteSpace())
@@ -54,11 +54,11 @@
         public string ConnectionStringForNotExistedDatabase
         {
             get => new ConnectionStringBuilder()
-            .AddProperty($"Data Source={Server}", !isLocal && Server.NotNullOrWhiteSpace())
-            .AddProperty($"Server={Server}", isLocal && Server.NotNullOrWhiteSpace())
+            .AddProperty($"Data Source={Server}", !IsLocal && Server.NotNullOrWhiteSpace())
+            .AddProperty($"Server={Server}", IsLocal && Server.NotNullOrWhiteSpace())
 
-            .AddProperty($"Integrated Security=False", !isLocal && Trusted_Connection.IsFalse())
-            .AddProperty($"Trusted_Connection=True", isLocal && Trusted_Connection.IsTrue())
+            .AddProperty($"Integrated Security=False", !IsLocal && Trusted_Connection.IsFalse())
+            .AddProperty($"Trusted_Connection=True", IsLocal && Trusted_Connection.IsTrue())
 
             .AddProperty($"User Id={UserId}", Trusted_Connection.IsFalse() && UserId.NotNullOrWhiteSpace())
             .AddProperty($"Password={Password}", Trusted_Connection.IsFalse() && Password.NotNullOrWhiteSpace())
@@ -220,7 +220,7 @@
                 }
             }
         }
-        private bool isLocal => ConnectViaIP.NotTrue();
+        private bool IsLocal => ConnectViaIP.NotTrue();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -284,9 +284,9 @@
                 connection?.Dispose();
             }
         }
-        private async Task<bool> CheckMSSQLServerServiceRunning()
-        {
-            return true;
+        //private async Task<bool> CheckMSSQLServerServiceRunning()
+        //{
+        //    return true;
             //ServiceController[] service = ServiceController.GetServices();
             //bool findSQLServer = false;
 
@@ -321,7 +321,7 @@
             //{
             //    return false;
             //}
-        }
+        //}
         ~SqlServerConnectionStringBuilder()
         {
             Dispose();
