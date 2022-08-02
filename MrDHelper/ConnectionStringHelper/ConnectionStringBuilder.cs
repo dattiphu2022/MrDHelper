@@ -70,7 +70,9 @@ namespace MrDHelper
         /// <param name="value">connectionstring property to conditionally add.</param>
         /// <param name="when">Condition in which the connectionstring property is added.</param>
         /// <returns>ConnectionStringBuilder</returns>
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         public ConnectionStringBuilder AddProperty(string value, Func<bool> when = null) => this.AddProperty(value, when());
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         /// <summary>
         /// Adds a conditional connectionstring property to the builder with comma separator.
@@ -86,7 +88,9 @@ namespace MrDHelper
         /// <param name="value">Function that returns a connectionstring property to conditionally add.</param>
         /// <param name="when">Condition in which the connectionstring property is added.</param>
         /// <returns>ConnectionStringBuilder</returns>
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         public ConnectionStringBuilder AddProperty(Func<string> value, Func<bool> when = null) => this.AddProperty(value, when());
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         /// <summary>
         /// Adds a conditional nested ConnectionStringBuilder to the builder with comma separator.
@@ -102,7 +106,9 @@ namespace MrDHelper
         /// <param name="value">connectionstring property to conditionally add.</param>
         /// <param name="when">Condition in which the connectionstring property is added.</param>
         /// <returns>ConnectionStringBuilder</returns>
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         public ConnectionStringBuilder AddProperty(ConnectionStringBuilder builder, Func<bool> when = null) => this.AddProperty(builder, when());
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         /// <summary>
         /// Finalize the completed connectionstring Classes as a string.
