@@ -25,14 +25,14 @@ namespace MrDHelper.Tests
         {
             IList<string> Strings = new List<string>() { "",""};
 
-            Assert.Throws<InvalidOperationException>(() => Strings.AddDummyItemsToMaximumCountOf(1, string.Empty));
+            Assert.DoesNotThrow(() => Strings.AddDummyItemsToMaximumCountOf(1, string.Empty));
         }
         [Test]
         public void AddDummyItemsToMaximumCountOf_InputFinalCountIsNegative_ThrowInvalidOperationException()
         {
             IList<string> Strings = new List<string>() { "", "" };
 
-            Assert.Throws<InvalidOperationException>(() => Strings.AddDummyItemsToMaximumCountOf(-1, string.Empty));
+            Assert.Throws<ArgumentException>(() => Strings.AddDummyItemsToMaximumCountOf(-1, string.Empty));
         }
         [Test]
         [TestCase(10, 10)]
