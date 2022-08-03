@@ -8,6 +8,7 @@
  */
 namespace MrDHelper
 {
+#pragma warning disable CS8603 // Possible null reference return.
     public static class BuilderExtensions
     {
         /// <summary>
@@ -30,4 +31,5 @@ namespace MrDHelper
             s.IsNullOrEmpty() ? null : s;
 
     }
+#pragma warning restore CS8603 // Possible null reference return.
 }
