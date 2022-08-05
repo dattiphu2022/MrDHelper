@@ -32,7 +32,10 @@
         public int RowSpan { get; set; } = 1;
         public string Title { get; set; } = string.Empty;
         public Dictionary<string, object?>? Datas { get; set; } = new Dictionary<string, object?>();
-
+        ~Cell()
+        {
+            Dispose();
+        }
         public void Dispose()
         {
             Datas = null;
