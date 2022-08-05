@@ -7,14 +7,38 @@ namespace MrDHelper
 {
     public class PATHS
     {
+        /// <summary>
+        /// System.IO.Directory.GetParent(<see cref="BasePath"/>)?.FullName
+        /// </summary>
         private static string? parentFolderWithoutSlash => System.IO.Directory.GetParent(BasePath)?.FullName;
+
+        /// <summary>
+        /// System.IO.Directory.GetParent(parentFolderWithoutSlash ?? <see cref="BasePath"/>)?.FullName;
+        /// </summary>
         public static string? ParrentFolderPath => System.IO.Directory.GetParent(parentFolderWithoutSlash ?? BasePath)?.FullName;
-        
+
+        /// <summary>
+        /// AppDomain.CurrentDomain.BaseDirectory
+        /// </summary>
         public static string BasePath = AppDomain.CurrentDomain.BaseDirectory;
-        
+
+        /// <summary>
+        /// Path.Combine(BasePath, "Data")
+        /// </summary>
         public static string DataFolderPath = Path.Combine(BasePath, "Data");
+
+        /// <summary>
+        /// Path.Combine(BasePath, "Bin")
+        /// </summary>
         public static string BinFolderPath = Path.Combine(BasePath, "Bin");
-        public static string GetFilePath(string folder, string fileName)
+        /// <summary>
+        /// Eg: Data, X.json will produce something like: ~/Data/x.json
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static string Get_FullFilePath_FromFolderAndFileName(string folder, string fileName)
         {
             if (fileName.IsNullOrWhiteSpace())
             {
@@ -24,7 +48,14 @@ namespace MrDHelper
             string filePath = Path.Combine(folderPath, fileName);
             return filePath;
         }
-        public static string GetFilePath(string fileName)
+
+        /// <summary>
+        /// Eg: X.json will produce something like: ~[startuppath]/x.json
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static string Get_FullFilePath(string fileName)
         {
             if (fileName.IsNullOrWhiteSpace())
             {
