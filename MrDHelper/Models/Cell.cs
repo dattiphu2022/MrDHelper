@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    public class Cell : IDisposable
+    public sealed class Cell : IDisposable
     {
         public object? this[string propertyName]
         {
