@@ -15,22 +15,28 @@ namespace MrDHelper
         /// <summary>
         /// System.IO.Directory.GetParent(parentFolderWithoutSlash ?? <see cref="BasePath"/>)?.FullName;
         /// </summary>
-        public static string? ParrentFolderPath => System.IO.Directory.GetParent(parentFolderWithoutSlash ?? BasePath)?.FullName;
+        public static string? ParrentFolderPath { get => System.IO.Directory.GetParent(parentFolderWithoutSlash ?? BasePath)?.FullName; }
 
         /// <summary>
         /// AppDomain.CurrentDomain.BaseDirectory
         /// </summary>
-        public static string BasePath = AppDomain.CurrentDomain.BaseDirectory;
+        public static string BasePath { get => AppDomain.CurrentDomain.BaseDirectory; }
 
         /// <summary>
         /// Path.Combine(BasePath, "Data")
         /// </summary>
-        public static string DataFolderPath = Path.Combine(BasePath, "Data");
+        public static string DataFolderPath { get => Path.Combine(BasePath, "Data"); }
 
         /// <summary>
         /// Path.Combine(BasePath, "Bin")
         /// </summary>
-        public static string BinFolderPath = Path.Combine(BasePath, "Bin");
+        public static string BinFolderPath { get => Path.Combine(BasePath, "Bin"); }
+
+        /// <summary>
+        /// Path.Combine(BasePath, "Logs")
+        /// </summary>
+        public static string LogFolderPath { get => Path.Combine(BasePath, "Logs"); }
+
         /// <summary>
         /// Eg: Data, X.json will produce something like: ~/Data/x.json
         /// </summary>
