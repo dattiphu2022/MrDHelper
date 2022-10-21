@@ -38,6 +38,16 @@ namespace MrDHelper
         public static string LogFolderPath { get => Path.Combine(BasePath, "Logs"); }
 
         /// <summary>
+        /// Path.Combine(BasePath, "ClientLogs")
+        /// </summary>
+        public static string ClientLogFolderPath { get => Path.Combine(BasePath, "ClientLogs"); }
+
+        /// <summary>
+        /// Path.Combine(BasePath, "MasterLogs")
+        /// </summary>
+        public static string MasterLogFolderPath { get => Path.Combine(BasePath, "MasterLogs"); }
+
+        /// <summary>
         /// Eg: Data, X.json will produce something like: ~/Data/x.json
         /// </summary>
         /// <param name="folder"></param>
