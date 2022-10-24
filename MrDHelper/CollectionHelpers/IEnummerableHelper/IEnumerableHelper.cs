@@ -90,7 +90,7 @@ namespace MrDHelper
         /// Dispose all item in current collection.
         /// </summary>
         /// <param name="collection"></param>
-        public static void Dispose(this IEnumerable? collection)
+        public static void Dispose<T>(this IEnumerable<T>? collection)
         {
             if (collection != null)
             {
