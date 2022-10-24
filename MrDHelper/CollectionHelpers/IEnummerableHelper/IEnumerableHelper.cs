@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -83,6 +85,20 @@ namespace MrDHelper
                 await func.Invoke(item);
             }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+        }
+        /// <summary>
+        /// Dispose all item in current collection.
+        /// </summary>
+        /// <param name="collection"></param>
+        public static void Dispose(this IEnumerable? collection)
+        {
+            if (collection != null)
+            {
+                foreach (var obj in collection.OfType<IDisposable>())
+                {
+                    obj.Dispose();
+                }
+            }
         }
     }
 }
