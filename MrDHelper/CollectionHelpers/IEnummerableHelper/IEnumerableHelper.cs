@@ -96,7 +96,7 @@ namespace MrDHelper
             {
                 foreach (var obj in collection.OfType<IDisposable>())
                 {
-                    obj.Dispose();
+                    obj?.Dispose();
                 }
             }
         }
