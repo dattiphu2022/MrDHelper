@@ -11,13 +11,13 @@
 		<RepositoryUrl>https://github.com/dattiphu2022/MrDHelper.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>extention; method; extension methods; mrdhelper</PackageTags>
-		<PackageReleaseNotes>Add: DllImport.User32
+		<PackageReleaseNotes>Remove: ConnectionStringHelper
 Update: README.md for more details in documentation.
 		</PackageReleaseNotes>
 		<Authors>Nguyễn Quốc Đạt</Authors>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<Platforms>AnyCPU</Platforms>
 		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
 

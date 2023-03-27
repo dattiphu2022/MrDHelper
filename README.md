@@ -78,18 +78,10 @@ var cell = SomeClass.ConvertToCell(someClass);
 cell[nameof(SomeClass.Property1)] = newValue;
 var otherSomeClass = cell.ConvertTo<SomeClass>();
 
------------
-var sqlConnectionString = new SqlServerConnectionStringBuilder{
-	Server = server,
-    Database = database,
-    UserId = userId,
-    Password = passWord,
-    Trusted_Connection = trusted,
-    ConnectViaIP = viaIp
-}
-bool validateResult = sqlConnectionString.ValidateConnectionString();
-var finalString = sqlConnectionString.FinalConnectionString;
 ```
+New in 1.1.0
+
+New in 1.1.1
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
