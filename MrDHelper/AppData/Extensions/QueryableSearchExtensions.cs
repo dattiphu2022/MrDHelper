@@ -2,7 +2,7 @@
 using MrDHelper;
 using System.Linq.Expressions;
 
-namespace NKE.BlazorUI.Extensions;
+namespace MrDHelper.AppData.Extensions;
 
 public static class QueryableSearchExtensions
 {
