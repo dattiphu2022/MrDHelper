@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace MrDHelper
@@ -62,6 +63,29 @@ namespace MrDHelper
         public static bool NotNullOrWhiteSpace(this string? input)
         {
             return !string.IsNullOrWhiteSpace(input);
+        }
+
+        /// Chuẩn hoá cho tìm kiếm: trim, lower, bỏ dấu (kể cả đ/Đ)
+        public static string Normalize(this string? input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return string.Empty;
+
+            input = input.Trim().ToLowerInvariant();
+
+            // Unicode normalization + remove diacritics
+            var formD = input.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder(formD.Length);
+            foreach (var ch in formD)
+            {
+                var uc = CharUnicodeInfo.GetUnicodeCategory(ch);
+                if (uc != UnicodeCategory.NonSpacingMark)
+                    sb.Append(ch);
+            }
+            // Replace special Vietnamese letters
+            return sb.ToString()
+                     .Normalize(NormalizationForm.FormC)
+                     .Replace('đ', 'd')
+                     .Replace('Đ', 'D');
         }
     }
 }

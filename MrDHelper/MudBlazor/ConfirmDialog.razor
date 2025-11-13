@@ -1,0 +1,34 @@
+﻿@using MudBlazor
+@using global::MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.body1">@ContentText</MudText>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="Cancel" Color="Color.Default">
+            @CancelText
+        </MudButton>
+
+        <MudButton Variant="Variant.Filled"
+                   OnClick="Confirm"
+                   Color="@Color"
+                   StartIcon="@YesIcon">
+            @ButtonText
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = "Đồng ý";
+    [Parameter] public string CancelText { get; set; } = "Hủy";
+    [Parameter] public Color Color { get; set; } = Color.Error;
+    [Parameter] public string? YesIcon { get; set; } = Icons.Material.Filled.CheckCircle;
+
+    private void Confirm() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}

@@ -1,4 +1,4 @@
-﻿namespace MrDHelper
+﻿namespace MrDHelper.Models
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +11,7 @@
                 {
                     return Datas[propertyName];
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
                     return null;
                 }
@@ -22,7 +22,7 @@
                 {
                     Datas[propertyName] = value;
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
                     Datas.Add(propertyName, value);
                 }; 
