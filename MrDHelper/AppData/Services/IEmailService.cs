@@ -1,6 +1,6 @@
 ﻿using MrDHelper.Models;
 
-namespace NKE.BlazorUI.AppData.Interface;
+namespace MrDHelper.AppData.Services;
 
 public interface IEmailService
 {

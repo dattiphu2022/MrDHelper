@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NKE.BlazorUI.AppData.Attributes;
 using System.Linq.Expressions;
 using MrDHelper.AppData.Interface;
+using MrDHelper.AppData.Attributes;
 
-namespace NKE.BlazorUI.AppData.Base
+namespace MrDHelper.AppData.Base
 {
     public abstract class RepositoryBase<T> : IRepository<T> where T : class
     {

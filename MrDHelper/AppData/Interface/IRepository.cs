@@ -1,4 +1,4 @@
-﻿using NKE.BlazorUI.AppData.Attributes;
+﻿using MrDHelper.AppData.Attributes;
 using System.Linq.Expressions;
 
 namespace MrDHelper.AppData.Interface;
