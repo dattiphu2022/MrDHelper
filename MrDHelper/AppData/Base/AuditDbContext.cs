@@ -11,7 +11,7 @@ namespace MrDHelper.AppData.Base
 {
     // Fix: Add a constraint to ensure TRole is derived from IdentityRole<Guid>  
     public abstract class AuditDbContext<TUser, TRole> : IdentityDbContext<TUser, TRole, Guid>
-        where TUser : IdentityUser<Guid>
+        where TUser : IdentityUser<Guid>, IAuditable
         where TRole : IdentityRole<Guid>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
