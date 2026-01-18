@@ -91,6 +91,68 @@ Add QueryBasePage for common searching functions.
 
 ```
 
+New in 2.0.5
+```c#
+
+Add EfSqliteFts5
+
+```
+1. Kế thừa
+
+```c#
+using VietFtsSearch;
+
+public sealed class DonVi : AuditableBase, IFtsIndexed, IHasGuidId
+{
+    public string PhienHieu { get; set; } = string.Empty;
+    public string TenDayDu { get; set; } = string.Empty;
+    public string? TenVietTat { get; set; }
+
+    public string BuildFtsAllText()
+        => string.Join(" | ", new[] { PhienHieu, TenDayDu, TenVietTat }
+            .Where(x => !string.IsNullOrWhiteSpace(x)));
+}
+```
+2. Đăng ký spec 1 lần khi app khởi động
+Ví dụ trong Program.cs (hoặc nơi cấu hình DI):
+
+```c#
+using VietFtsSearch;
+
+FtsRegistry.Register<DonVi>(mainTable: "DonVis", ftsTable: "DonVi_fts", idColumn: "Id");
+// sau này thêm entity khác => thêm 1 dòng Register
+
+```
+
+3. Gắn interceptor vào DbContextOptions
+```c#
+using VietFtsSearch;
+using Microsoft.EntityFrameworkCore;
+
+services.AddDbContext<AppDbContext>(opt =>
+{
+    opt.UseSqlite("Data Source=./applicationdatabase.db;");
+    opt.AddInterceptors(new SqliteFtsSaveChangesInterceptor());
+});
+
+```
+
+4. Ensure schema FTS (sau migrate)
+```c#
+using VietFtsSearch;
+
+await db.Database.MigrateAsync();
+await FtsSchema.EnsureFtsTablesAsync(db);
+
+```
+5. Search
+```c#
+using VietFtsSearch;
+
+var search = new FtsSearchService(db);
+var (total, items) = await search.SearchAsync<DonVi>("da nang", page: 0, pageSize: 20);
+```
+
 <!-- ROADMAP -->
 ## Roadmap
 

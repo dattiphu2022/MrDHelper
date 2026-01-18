@@ -20,7 +20,7 @@
 		<Authors>Nguyễn Quốc Đạt</Authors>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>2.0.4</Version>
+		<Version>2.0.5</Version>
 		<Platforms>AnyCPU</Platforms>
 		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -50,6 +50,8 @@
 	<ItemGroup>
 		<PackageReference Include="MailKit" Version="4.*" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.*" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.*" />
 		<PackageReference Include="System.ComponentModel.Annotations" Version="5.*" />

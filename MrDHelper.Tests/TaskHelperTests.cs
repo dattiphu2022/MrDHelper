@@ -1,4 +1,4 @@
-using System;
+using MrDHelper.TaskHelper;
 
 namespace MrDHelper.Tests
 {
@@ -16,7 +16,7 @@ namespace MrDHelper.Tests
         [TestCase("10", "10", typeof(string))]
         public void TaskHelper_InputT_ReturnT<T>(T input, T result, Type type)
         {
-            var helperResult = TaskHelper.RunSync(() => GetInput(input));
+            var helperResult = TaskHelper.TaskHelper.RunSync(() => GetInput(input));
 
             Assert.That(helperResult, Is.EqualTo(result));
             Assert.That(helperResult.GetType(), Is.EqualTo(type));
