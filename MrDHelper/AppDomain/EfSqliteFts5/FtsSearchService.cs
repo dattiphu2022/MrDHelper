@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using MrDHelper.Models;
+using MrDHelper.MudBlazor.Search;
+using MudBlazor.Charts;
 using System.Data.Common;
 
 namespace MrDHelper.AppDomain.EfSqliteFts5
@@ -10,19 +13,18 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
 
         public FtsSearchService(DbContext db) => _db = db;
 
-        public async Task<(int Total, List<TEntity> Items)> SearchAsync<TEntity>(
-            string search, int page, int pageSize, CancellationToken ct = default)
+        public async Task<PagedResult<TEntity>> SearchAsync<TEntity>(SearchQuery query, CancellationToken ct = default)
             where TEntity : class, IHasGuidId, IFtsIndexed
         {
             if (!FtsRegistry.TryGet<TEntity>(out var spec))
                 throw new InvalidOperationException($"Entity {typeof(TEntity).Name} chưa đăng ký FTS trong FtsRegistry.");
 
-            if (page < 0) page = 0;
-            if (pageSize <= 0) pageSize = 20;
+            if (query.Page < 0) query.Page = 0;
+            if (query.PageSize <= 0) query.PageSize = 20;
 
-            var match = VietFts.BuildMatchQuery(search, prefix: true);
+            var match = VietFts.BuildMatchQuery(query.Search ?? string.Empty, prefix: true);
             if (string.IsNullOrWhiteSpace(match))
-                return (0, new List<TEntity>());
+                return new PagedResult<TEntity>(new List<TEntity>(), 0, query.Page, query.PageSize);
 
             await using var con = _db.Database.GetDbConnection();
             if (con.State != System.Data.ConnectionState.Open)
@@ -48,11 +50,11 @@ ORDER BY bm25({spec.FtsTable})
 LIMIT @Take OFFSET @Skip;",
                 ct,
                 ("Match", match),
-                ("Take", pageSize),
-                ("Skip", page * pageSize));
+                ("Take", query.PageSize),
+                ("Skip", query.Page * query.PageSize));
 
             if (ids.Count == 0)
-                return (total, new List<TEntity>());
+                return new PagedResult<TEntity>(new List<TEntity>(), 0, query.Page, query.PageSize);
 
             // Join về entity thật
             var items = await _db.Set<TEntity>()
@@ -64,7 +66,7 @@ LIMIT @Take OFFSET @Skip;",
             var order = ids.Select((id, idx) => new { id, idx }).ToDictionary(x => x.id, x => x.idx);
             items = items.OrderBy(x => order[x.Id]).ToList();
 
-            return (total, items);
+            return new PagedResult<TEntity>(items, total, query.Page, query.PageSize);
         }
 
         private static async Task<int> ScalarIntAsync(
