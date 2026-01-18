@@ -1,8 +1,9 @@
-﻿using MrDHelper.GenericHelper;
+﻿using MrDHelper.CollectionHelpers.IEnummerableHelper;
+using MrDHelper.GenericHelper;
 using MrDHelper.Models;
 using System.Collections.Generic;
 
-namespace MrDHelper
+namespace MrDHelper.CellHelpers
 {
     public static class CellExtension
     {

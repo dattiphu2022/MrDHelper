@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MrDHelper
+namespace MrDHelper.TaskHelper
 {
     public static class TaskHelper
     {

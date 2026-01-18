@@ -1,4 +1,4 @@
-﻿namespace MrDHelper
+﻿namespace MrDHelper.ValueTypeHelpers.BoolHelper
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

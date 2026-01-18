@@ -84,7 +84,12 @@ New in 1.1.0
 New in 1.1.1
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+New in 2.0.4
+```c#
 
+Add QueryBasePage for common searching functions.
+
+```
 
 <!-- ROADMAP -->
 ## Roadmap

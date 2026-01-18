@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MrDHelper
+namespace MrDHelper.CollectionHelpers.IListHelper
 {
     /// <summary>
     /// <see cref="IList{T}"/> extension methods.

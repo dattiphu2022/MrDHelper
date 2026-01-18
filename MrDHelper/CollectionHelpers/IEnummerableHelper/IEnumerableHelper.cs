@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MrDHelper
+namespace MrDHelper.CollectionHelpers.IEnummerableHelper
 {
     /// <summary>
     /// Extension methods for <see cref="IEnumerable{T}"/>
