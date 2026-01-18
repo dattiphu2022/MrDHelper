@@ -13,7 +13,7 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
 
         public FtsSearchService(DbContext db) => _db = db;
 
-        public async Task<PagedResult<TEntity>> SearchAsync<TEntity>(SearchQuery query, CancellationToken ct = default)
+        public async Task<PagedResult<TEntity>> SearchAsync<TEntity>(SearchQuery query, FtsSearchOptions<TEntity>? options = null, CancellationToken ct = default)
             where TEntity : class, IHasGuidId, IFtsIndexed
         {
             if (!FtsRegistry.TryGet<TEntity>(out var spec))
@@ -21,6 +21,28 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
 
             if (query.Page < 0) query.Page = 0;
             if (query.PageSize <= 0) query.PageSize = 20;
+
+
+            if (string.IsNullOrWhiteSpace(query.Search))
+            {
+                var baseQ = _db.Set<TEntity>().AsNoTracking();
+
+                var total0 = await baseQ.CountAsync(ct);
+
+                IOrderedQueryable<TEntity> ordered =
+                options?.DefaultOrder is not null
+                    ? options.DefaultOrder(baseQ)
+                    : baseQ.OrderBy(x => x.Id); // paging ổn định
+
+                var items0 = await ordered
+                    .Skip(query.Page * query.PageSize)
+                    .Take(query.PageSize)
+                    .ToListAsync(ct);
+
+                return new PagedResult<TEntity>(items0, total0, query.Page, query.PageSize);
+            }
+
+
 
             var match = VietFts.BuildMatchQuery(query.Search ?? string.Empty, prefix: true);
             if (string.IsNullOrWhiteSpace(match))

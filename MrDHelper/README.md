@@ -91,7 +91,7 @@ Add QueryBasePage for common searching functions.
 
 ```
 
-New in 2.0.5 + 2.0.6
+New in 2.0.5 + 2.0.6 + 2.0.7
 ```c#
 
 Add EfSqliteFts5
@@ -150,7 +150,7 @@ await FtsSchema.EnsureFtsTablesAsync(db);
 using VietFtsSearch;
 
 var search = new FtsSearchService(db);
-var pagedResult = await search.SearchAsync<DonVi>(SearchQuery, CancelationToken);
+var pagedResult = await search.SearchAsync<DonVi>(SearchQuery, FtsSearchOption, CancelationToken);
 ```
 
 <!-- ROADMAP -->
