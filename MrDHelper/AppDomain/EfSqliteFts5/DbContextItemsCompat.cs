@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Runtime.CompilerServices;
 
-namespace MrDHelper.AppDomain.EfSqliteFts5
-{
-    public static class DbContextItemsCompat
-    {
-        private static readonly ConditionalWeakTable<DbContext, Dictionary<string, object?>> _itemsTable = new();
+namespace MrDHelper.AppDomain.EfSqliteFts5;
 
-        public static Dictionary<string, object?> Items(this DbContext context)
-        {
-            return _itemsTable.GetOrCreateValue(context);
-        }
+public static class DbContextItemsCompat
+{
+    private static readonly ConditionalWeakTable<DbContext, Dictionary<string, object?>> _itemsTable = new();
+
+    public static Dictionary<string, object?> Items(this DbContext context)
+    {
+        return _itemsTable.GetOrCreateValue(context);
     }
 }

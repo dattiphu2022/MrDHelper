@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using MrDHelper.Models;
 using MrDHelper.MudBlazor.Search;
-using MudBlazor.Charts;
 using System.Data.Common;
 
 namespace MrDHelper.AppDomain.EfSqliteFts5
@@ -12,6 +11,21 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
         private readonly DbContext _db;
 
         public FtsSearchService(DbContext db) => _db = db;
+
+        public Task<PagedResult<TEntity>> SearchAsync<TEntity>(
+        SearchQuery query,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? defaultOrder,
+        CancellationToken ct = default)
+        where TEntity : class, IHasGuidId, IFtsIndexed
+        {
+            var opts = defaultOrder is null
+                ? null
+                : new FtsSearchOptions<TEntity> { DefaultOrder = defaultOrder };
+
+            return SearchAsync<TEntity>(query,
+                options: opts,
+                ct: ct);
+        }
 
         public async Task<PagedResult<TEntity>> SearchAsync<TEntity>(SearchQuery query, FtsSearchOptions<TEntity>? options = null, CancellationToken ct = default)
             where TEntity : class, IHasGuidId, IFtsIndexed

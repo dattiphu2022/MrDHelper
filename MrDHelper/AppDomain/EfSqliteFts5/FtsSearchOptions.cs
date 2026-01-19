@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MrDHelper.AppDomain.EfSqliteFts5
+﻿namespace MrDHelper.AppDomain.EfSqliteFts5
 {
     public sealed class FtsSearchOptions<TEntity>
     where TEntity : class
