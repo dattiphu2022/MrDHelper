@@ -1,11 +1,15 @@
 ﻿using MrDHelper.Models;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace MrDHelper.GenericHelper;
 
 public static class DisplayExtensions
 {
+    private static readonly ConcurrentDictionary<(Type Type, string MemberName), string> _displayNameCache = new();
+
     // =====================================================
     // 1) ENUM
     // =====================================================
@@ -69,6 +73,57 @@ public static class DisplayExtensions
         var prop = typeof(T).GetProperty(propertyName);
         var displayAttr = prop?.GetCustomAttribute<DisplayAttribute>();
         return displayAttr?.GetName() ?? propertyName;
+    }
+
+    /// Lấy Display(Name) từ PropertyInfo (cache để tránh reflection lặp lại)
+    public static string GetDisplayName(this PropertyInfo property)
+    {
+        if (property == null) return string.Empty;
+
+        var type = property.DeclaringType ?? property.ReflectedType;
+        if (type == null) return property.Name;
+
+        return _displayNameCache.GetOrAdd((type, property.Name), _ =>
+        {
+            var displayAttr = property.GetCustomAttribute<DisplayAttribute>();
+            return displayAttr?.GetName() ?? property.Name;
+        });
+    }
+
+    /// Lấy Display(Name) theo Type + propertyName (không cần instance)
+    public static string GetDisplayName(this Type targetType, string propertyName)
+    {
+        if (targetType == null) return string.Empty;
+        if (string.IsNullOrWhiteSpace(propertyName)) return propertyName ?? string.Empty;
+
+        return _displayNameCache.GetOrAdd((targetType, propertyName), _ =>
+        {
+            var prop = targetType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            if (prop == null) return propertyName;
+
+            var displayAttr = prop.GetCustomAttribute<DisplayAttribute>();
+            return displayAttr?.GetName() ?? prop.Name;
+        });
+    }
+
+    /// Lấy Display(Name) theo expression: x => x.Property (an toàn kiểu, refactor không gãy)
+    /// Hỗ trợ cả x => (object)x.ValueTypeProperty
+    public static string GetDisplayName<TModel>(Expression<Func<TModel, object?>> selector)
+        where TModel : class
+    {
+        if (selector == null) return string.Empty;
+
+        MemberExpression? memberExpr = selector.Body switch
+        {
+            MemberExpression m => m,
+            UnaryExpression { NodeType: ExpressionType.Convert, Operand: MemberExpression m } => m,
+            _ => null
+        };
+
+        if (memberExpr?.Member is PropertyInfo prop)
+            return prop.GetDisplayName();
+
+        return selector.ToString();
     }
 
     /// Lấy Display(Order) của 1 property trong T

@@ -47,49 +47,6 @@ This project is providing "extension methods" that are usually used in short way
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
-
-1. Reference to MrdHelper
-2. ```using MrdHelper```
-3. Use the extension methods that you want.
-
-```c#
-IEnumerable<T>?.ForEach<T>(Action<T>);
-IEnumerable<T>?.ForEachAsync<T>(Fun<T,Task>) //awaitable, eg: await IEnumerable<T>?.ForEachAsync(async (t)=> { await Task.Delay(10); });
-
-IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
-
-<T>.IsNull(); <T>.NotNull();
-
-bool?.IsFalse(); bool?.IsTrue();
-bool?.NotFalse(); bool?.NotTrue();
-
-"string".GetMd5();
-"string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
-"string".NotNullOrEmpty(); "string".NotNullOrWhiteSpace();
-
-TaskHelper.RunSync<TResult>(Func<Task<TResult>, TResult>); // eg: var result = TaskHelper.RunSync<TResult>(()=>GetResultAsync());
-```
-
-New in 1.0.8+1.0.9
-```c#
-var someClass = new SomeClass();
-var cell = SomeClass.ConvertToCell(someClass);
-cell[nameof(SomeClass.Property1)] = newValue;
-var otherSomeClass = cell.ConvertTo<SomeClass>();
-
-```
-New in 1.1.0
-
-New in 1.1.1
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-New in 2.0.4
-```c#
-
-Add QueryBasePage for common searching functions.
-
-```
 
 New in 2.0.5 + 2.0.6 + 2.0.7
 ```c#
