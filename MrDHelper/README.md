@@ -106,6 +106,7 @@ await FtsSchema.EnsureFtsTablesAsync(db);
 ```c#
 using VietFtsSearch;
 
+// FtsSearchOption.DefaultOrder + FtsSearchOption.Include
 var search = new FtsSearchService(db);
 var pagedResult = await search.SearchAsync<DonVi>(SearchQuery, FtsSearchOption, CancelationToken);
 ```

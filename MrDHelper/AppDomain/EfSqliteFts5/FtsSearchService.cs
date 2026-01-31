@@ -27,7 +27,9 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
                 ct: ct);
         }
 
-        public async Task<PagedResult<TEntity>> SearchAsync<TEntity>(SearchQuery query, FtsSearchOptions<TEntity>? options = null, CancellationToken ct = default)
+        public async Task<PagedResult<TEntity>> SearchAsync<TEntity>(
+            SearchQuery query,
+            FtsSearchOptions<TEntity>? options = null, CancellationToken ct = default)
             where TEntity : class, IHasGuidId, IFtsIndexed
         {
             if (!FtsRegistry.TryGet<TEntity>(out var spec))
@@ -40,6 +42,11 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
             if (string.IsNullOrWhiteSpace(query.Search))
             {
                 var baseQ = _db.Set<TEntity>().AsNoTracking();
+
+                if (options?.Include is not null)
+                {
+                    baseQ = options.Include(baseQ);
+                }
 
                 var total0 = await baseQ.CountAsync(ct);
 
@@ -93,10 +100,14 @@ LIMIT @Take OFFSET @Skip;",
                 return new PagedResult<TEntity>(new List<TEntity>(), 0, query.Page, query.PageSize);
 
             // Join về entity thật
-            var items = await _db.Set<TEntity>()
+            IQueryable<TEntity> entityQ = _db.Set<TEntity>()
                 .AsNoTracking()
-                .Where(x => ids.Contains(x.Id))
-                .ToListAsync(ct);
+                .Where(x => ids.Contains(x.Id));
+
+            if (options?.Include is not null)
+                entityQ = options.Include(entityQ);
+
+            var items = await entityQ.ToListAsync(ct);
 
             // giữ thứ tự rank của FTS
             var order = ids.Select((id, idx) => new { id, idx }).ToDictionary(x => x.id, x => x.idx);
