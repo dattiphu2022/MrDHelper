@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MrDHelper.AppDomain.EfSqliteFts5;
+using System.ComponentModel.DataAnnotations;
 
 namespace MrDHelper.AppDomain.AuditableModelBase
 {
     /// <summary>
     /// Default ID has GUID type.
     /// </summary>
-    public abstract class AuditableBase : IAuditable
+    public abstract class AuditableBase : IAuditable, IHasGuidId
     {
         [Key]
         public virtual Guid Id { get; set; } = Guid.NewGuid();
