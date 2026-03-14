@@ -9,7 +9,7 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         string? EditedBy { get; set; }
         DateTimeOffset? EditedDate { get; set; }
         bool IsDeleted { get; set; }
-        public byte[]? RowVersion { get; set; }
+        public byte[] RowVersion { get; set; }
     }
 
 }

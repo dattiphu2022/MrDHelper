@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MrDHelper.AppDomain.AuditableModelBase
 {
-    /// <summary>
-    /// Default ID has GUID type.
-    /// </summary>
     public abstract class AuditableBase : IAuditable, IHasGuidId
     {
         [Key]
@@ -17,8 +14,14 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         public bool IsDeleted { get; set; }
 
         [Timestamp]
-        public byte[]? RowVersion { get; set; }
+        public byte[] RowVersion { get; set; } = CreateNewRowVersion();
+
+        protected static byte[] CreateNewRowVersion()
+        {
+            return Guid.NewGuid().ToByteArray();
+        }
     }
+
     public abstract class AuditableBase<TIdType> : IAuditable
     {
         [Key]
@@ -30,7 +33,11 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         public bool IsDeleted { get; set; }
 
         [Timestamp]
-        public byte[]? RowVersion { get; set; }
+        public byte[] RowVersion { get; set; } = CreateNewRowVersion();
+
+        protected static byte[] CreateNewRowVersion()
+        {
+            return Guid.NewGuid().ToByteArray();
+        }
     }
 }
-
