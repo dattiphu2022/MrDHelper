@@ -52,10 +52,12 @@ namespace MrDHelper.AppData.Base
                     case EntityState.Added:
                         entry.Entity.CreatedDate = now;
                         entry.Entity.CreatedBy = userName;
+                        entry.Entity.RowVersion = Guid.NewGuid().ToByteArray();
                         break;
                     case EntityState.Modified:
                         entry.Entity.EditedDate = now;
                         entry.Entity.EditedBy = userName;
+                        entry.Entity.RowVersion = Guid.NewGuid().ToByteArray();
                         break;
                     case EntityState.Deleted:
                         entry.Entity.IsDeleted = true;
