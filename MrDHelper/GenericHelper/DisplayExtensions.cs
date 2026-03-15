@@ -14,7 +14,7 @@ public static class DisplayExtensions
     // 1) ENUM
     // =====================================================
 
-    /// Lấy Display(Name) của 1 giá trị enum
+    /// Gets the Display(Name) value for an enum member.
     public static string GetDisplayName(this Enum value)
     {
         var field = value.GetType().GetField(value.ToString());
@@ -22,7 +22,7 @@ public static class DisplayExtensions
         return displayAttr?.GetName() ?? value.ToString();
     }
 
-    /// Lấy Display(Order) của 1 giá trị enum
+    /// Gets the Display(Order) value for an enum member.
     public static int GetDisplayOrder(this Enum value)
     {
         var field = value.GetType().GetField(value.ToString());
@@ -30,7 +30,7 @@ public static class DisplayExtensions
         return displayAttr?.Order ?? int.MaxValue;
     }
 
-    /// Lấy danh sách enum kèm Display/Order (đã sắp theo Order)
+    /// Gets enum members with Display/Order metadata, sorted by order.
     public static IEnumerable<DisplayEnumModel<TEnum>>
         GetDisplayOrderedProperties<TEnum>()
         where TEnum : struct, Enum
@@ -39,7 +39,7 @@ public static class DisplayExtensions
 
         return enumType
             .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(f => f.IsLiteral) // enum values là literal
+            .Where(f => f.IsLiteral) // Enum values are literals.
             .Select(f =>
             {
                 var displayAttr = f.GetCustomAttribute<DisplayAttribute>();
@@ -54,7 +54,7 @@ public static class DisplayExtensions
             .ToList();
     }
 
-    /// Danh sách (Value, DisplayName) gọn cho dropdown (enum)
+    /// Returns a compact `(Value, DisplayName)` list for enum dropdowns.
     public static List<(TEnum Value, string DisplayName)>
         GetValueLabelListForEnum<TEnum>()
         where TEnum : struct, Enum
@@ -66,7 +66,7 @@ public static class DisplayExtensions
     // 2) CLASS / RECORD: PROPERTIES
     // =====================================================
 
-    /// Lấy Display(Name) của 1 property trong T (label/header)
+    /// Gets the Display(Name) value for a property in `T` (label/header).
     public static string GetDisplayName<T>(this T obj, string propertyName)
         where T : class
     {
@@ -75,7 +75,7 @@ public static class DisplayExtensions
         return displayAttr?.GetName() ?? propertyName;
     }
 
-    /// Lấy Display(Name) từ PropertyInfo (cache để tránh reflection lặp lại)
+    /// Gets the Display(Name) value from `PropertyInfo`, using a cache to avoid repeated reflection.
     public static string GetDisplayName(this PropertyInfo property)
     {
         if (property == null) return string.Empty;
@@ -90,7 +90,7 @@ public static class DisplayExtensions
         });
     }
 
-    /// Lấy Display(Name) theo Type + propertyName (không cần instance)
+    /// Gets the Display(Name) value by type and property name without requiring an instance.
     public static string GetDisplayName(this Type targetType, string propertyName)
     {
         if (targetType == null) return string.Empty;
@@ -106,8 +106,8 @@ public static class DisplayExtensions
         });
     }
 
-    /// Lấy Display(Name) theo expression: x => x.Property (an toàn kiểu, refactor không gãy)
-    /// Hỗ trợ cả x => (object)x.ValueTypeProperty
+    /// Gets the Display(Name) value from an expression such as `x => x.Property`.
+    /// Also supports `x => (object)x.ValueTypeProperty`.
     public static string GetDisplayName<TModel>(Expression<Func<TModel, object?>> selector)
         where TModel : class
     {
@@ -126,7 +126,7 @@ public static class DisplayExtensions
         return selector.ToString();
     }
 
-    /// Lấy Display(Order) của 1 property trong T
+    /// Gets the Display(Order) value for a property in `T`.
     public static int GetDisplayOrder<T>(this T obj, string propertyName)
         where T : class
     {
@@ -135,8 +135,8 @@ public static class DisplayExtensions
         return displayAttr?.Order ?? int.MaxValue;
     }
 
-    /// Lấy properties public instance (trừ [ScaffoldColumn(false)]) đã sắp theo Display(Order)
-    /// GỌI TRÊN INSTANCE để T được nội suy chính xác.
+    /// Gets public instance properties, excluding `[ScaffoldColumn(false)]`, sorted by Display(Order).
+    /// Call this on an instance so `T` can be inferred correctly.
     public static IEnumerable<DisplayClassModel>
         GetDisplayOrderedProperties<T>(this T obj)
         where T : class
@@ -161,7 +161,7 @@ public static class DisplayExtensions
             .ToList();
     }
 
-    /// Overload tiện dụng: gọi theo Type (không cần instance)
+    /// Convenience overload that works from a `Type` without an instance.
     public static IEnumerable<DisplayClassModel>
         GetDisplayOrderedProperties(Type targetType)
     {
@@ -192,22 +192,22 @@ public static class DisplayExtensions
         => GetDisplayOrderedProperties(typeof(TModel));
 
     // =====================================================
-    // 3) STATIC CLASS / CLASS CHỨA CONST: CONSTANT FIELDS
+    // 3) STATIC CLASS / CLASS WITH CONST MEMBERS: CONSTANT FIELDS
     // =====================================================
 
-    /// Lấy các const string public static có [Display], đã sắp theo Display(Order)
+    /// Gets public static `const string` members with `[Display]`, sorted by Display(Order).
     public static List<DisplayConstantModel>
         GetDisplayOrderedConstants(Type staticOrConstHolderType)
     {
-        // Cho phép: static class hoặc class thường (do const vẫn là static)
+        // Supports both static classes and regular classes because `const` members are still static.
         return staticOrConstHolderType
             .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string)) // chỉ const string
+            .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string)) // Only const strings.
             .Select(f =>
             {
                 var display = f.GetCustomAttribute<DisplayAttribute>();
                 var order = display?.Order ?? int.MaxValue;
-                var label = display?.GetName() ?? f.Name;  // GetName() hỗ trợ ResourceType (localization)
+                var label = display?.GetName() ?? f.Name;  // GetName() supports ResourceType-based localization.
                 var value = (string)f.GetRawConstantValue()!;
                 return new DisplayConstantModel(value, label, order, f);
             })
@@ -216,12 +216,12 @@ public static class DisplayExtensions
             .ToList();
     }
 
-    /// Generic tiện dụng: GetDisplayOrderedConstants<TStatic>()
+    /// Generic convenience wrapper for `GetDisplayOrderedConstants<TStatic>()`.
     public static List<DisplayConstantModel>
         GetDisplayOrderedConstants<TStatic>()
         => GetDisplayOrderedConstants(typeof(TStatic));
 
-    /// Danh sách (Value, DisplayName) gọn cho dropdown (constants)
+    /// Returns a compact `(Value, DisplayName)` list for constant-based dropdowns.
     public static List<(string Value, string DisplayName)>
         GetValueLabelListForConstants<TStatic>()
         => GetDisplayOrderedConstants<TStatic>()

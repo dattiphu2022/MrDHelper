@@ -32,18 +32,18 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
             where TEntity : class, IHasGuidId, IFtsIndexed
         {
             if (!FtsRegistry.TryGet<TEntity>(out var spec))
-                throw new InvalidOperationException($"Entity {typeof(TEntity).Name} chưa đăng ký FTS trong FtsRegistry.");
+                throw new InvalidOperationException($"Entity {typeof(TEntity).Name} has not been registered for FTS in FtsRegistry.");
 
             if (query.Page < 0) query.Page = 0;
             if (query.PageSize <= 0) query.PageSize = 20;
 
-            // ===== base query (apply Filter/Include) =====
+            // ===== Base query (apply Filter/Include) =====
             IQueryable<TEntity> baseQ = _db.Set<TEntity>().AsNoTracking();
 
             if (options?.Filter is not null)
                 baseQ = options.Filter(baseQ);
 
-            // Include chỉ áp khi cần load entity
+            // Apply Include only when entity loading is required.
             Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = options?.Include;
 
             // ===== CASE 1: no keyword => normal EF paging with filter =====
@@ -79,8 +79,8 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
             if (con.State != System.Data.ConnectionState.Open)
                 await con.OpenAsync(ct);
 
-            // Với filter: không thể lấy LIMIT/OFFSET trực tiếp rồi lọc (sẽ rỗng).
-            // => Quét theo chunk và lọc bằng baseQ trước khi xác định trang.
+            // With a filter, we cannot fetch LIMIT/OFFSET directly and filter afterward because the page may become empty.
+            // Scan in chunks and filter through baseQ before determining the requested page.
 
             var pageSize = query.PageSize;
             var needStart = query.Page * pageSize;
@@ -92,17 +92,17 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
             var maxScanPages = Math.Max(10, options?.MaxScanPages ?? 200);
             var maxScan = pageSize * maxScanPages;
 
-            var acceptedIds = new List<Guid>(capacity: needEnd + pageSize); // ids đã qua filter, theo rank
-            var acceptedSet = new HashSet<Guid>(); // chống trùng
+            var acceptedIds = new List<Guid>(capacity: needEnd + pageSize); // Filtered ids in rank order.
+            var acceptedSet = new HashSet<Guid>(); // Prevent duplicates.
 
-            var totalAccepted = 0; // total theo filter
+            var totalAccepted = 0; // Total matching the filter.
             var offset = 0;
 
             while (true)
             {
                 ct.ThrowIfCancellationRequested();
 
-                // Lấy 1 chunk ids theo rank từ FTS
+                // Read one chunk of ranked ids from FTS.
                 var chunkIds = await QueryGuidListAsync(
                     con,
                     _db.Database.CurrentTransaction?.GetDbTransaction(),
@@ -122,8 +122,8 @@ LIMIT @Take OFFSET @Skip;",
 
                 offset += chunkIds.Count;
 
-                // Lọc chunkIds bằng baseQ (đã áp DonViIds...) để giữ đúng dữ liệu
-                // Query này chạy trong DB: WHERE Id IN (...)
+                // Filter chunkIds through baseQ so the result respects all upstream filters.
+                // This query runs in the database as WHERE Id IN (...).
                 var validInDb = await baseQ
                     .Where(x => chunkIds.Contains(x.Id))
                     .Select(x => x.Id)
@@ -133,7 +133,7 @@ LIMIT @Take OFFSET @Skip;",
                 {
                     var validSet = validInDb.ToHashSet();
 
-                    // giữ thứ tự rank của chunkIds
+                    // Preserve the rank order from chunkIds.
                     foreach (var id in chunkIds)
                     {
                         if (!validSet.Contains(id)) continue;
@@ -144,33 +144,32 @@ LIMIT @Take OFFSET @Skip;",
                     totalAccepted += validInDb.Count;
                 }
 
-                // Chốt đủ dữ liệu cho page cần trả
+                // Stop once we have enough data for the requested page.
                 if (acceptedIds.Count >= needEnd)
                 {
-                    // nhưng vẫn cần TotalCount đúng => tiếp tục scan để đếm đủ, trừ khi vượt maxScan
+                    // We still need an accurate total count, so continue scanning unless maxScan is reached.
                     if (offset >= maxScan)
                         break;
 
-                    // nếu bạn muốn TotalCount "đủ dùng" (không quét hết), thì break ở đây.
-                    // nhưng yêu cầu bạn là sync đúng => mình tiếp tục scan để count chính xác.
+                    // If an approximate TotalCount is acceptable, you could break here instead.
+                    // This implementation keeps scanning to preserve accurate counts.
                 }
 
-                // Chặn quét quá nặng
+                // Prevent excessively heavy scanning.
                 if (offset >= maxScan)
                     break;
             }
 
-            // Total theo filter
-            // totalAccepted hiện tại đếm theo từng chunk validInDb, nhưng có thể trùng giữa chunk (hiếm).
-            // Để chắc chắn, total = số lượng distinct acceptedSet + số lượng valid nhưng chưa add? -> đơn giản hóa:
-            // Mình tính total bằng acceptedSet.Count nếu đã scan tới hết; nếu dừng vì maxScan thì total có thể bị thấp.
-            // Để chính xác tuyệt đối: nếu bạn cần total tuyệt đối, maxScanPages phải đủ lớn hoặc bỏ giới hạn.
+            // Total after filtering.
+            // totalAccepted counts valid ids per chunk, but duplicates across chunks are possible, although rare.
+            // For simplicity and correctness, use acceptedSet.Count as the distinct total.
+            // If scanning stops because of maxScan, the total may be lower than the true absolute total.
             var total = acceptedSet.Count;
 
             if (acceptedIds.Count == 0)
                 return new PagedResult<TEntity>(new List<TEntity>(), 0, query.Page, query.PageSize);
 
-            // Lấy ids của trang hiện tại
+            // Extract the ids for the current page.
             var pageIds = acceptedIds
                 .Skip(needStart)
                 .Take(pageSize)
@@ -179,17 +178,17 @@ LIMIT @Take OFFSET @Skip;",
             if (pageIds.Count == 0)
                 return new PagedResult<TEntity>(new List<TEntity>(), total, query.Page, query.PageSize);
 
-            // Load entity theo pageIds
+            // Load entities for the current page ids.
             IQueryable<TEntity> entityQ = _db.Set<TEntity>().AsNoTracking()
                 .Where(x => pageIds.Contains(x.Id));
 
-            // apply include nếu cần
+            // Apply include when needed.
             if (include is not null)
                 entityQ = include(entityQ);
 
             var items = await entityQ.ToListAsync(ct);
 
-            // giữ thứ tự rank
+            // Preserve rank order.
             var order = pageIds.Select((id, idx) => new { id, idx }).ToDictionary(x => x.id, x => x.idx);
             items = items.OrderBy(x => order[x.Id]).ToList();
 

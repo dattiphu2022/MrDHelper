@@ -12,14 +12,14 @@ namespace MrDHelper.AppData.Extensions;
 public static class DbContextEncryptionExtensions
 {
     /// <summary>
-    /// Migrate/re-encrypt các trường [Encrypted] từ oldKey sang newKey.
-    /// Nếu dữ liệu chưa mã hóa (plaintext), sẽ tự động mã hóa mới.
+    /// Migrates or re-encrypts `[Encrypted]` fields from `oldKey` to `newKey`.
+    /// If the stored value is still plaintext, it is encrypted with the new key.
     /// </summary>
     /// <param name="db">DbContext instance</param>
-    /// <param name="oldKey">AES key cũ (có thể null hoặc "" nếu lần đầu mã hóa)</param>
-    /// <param name="newKey">AES key mới</param>
-    /// <param name="batchSize">Batch size mỗi lần xử lý</param>
-    /// <param name="logError">Action log lỗi (nếu muốn)</param>
+    /// <param name="oldKey">Previous AES key. Can be null or empty for first-time encryption.</param>
+    /// <param name="newKey">New AES key.</param>
+    /// <param name="batchSize">Batch size for each processing cycle.</param>
+    /// <param name="logError">Optional error logging callback.</param>
     public static async Task MigrateEncryptionKeyAsync<TContext>(
         this TContext db,
         string oldKey,
@@ -37,18 +37,18 @@ public static class DbContextEncryptionExtensions
 
             var keyPropInfo = clrType.GetProperty(keyProp.Name);
 
-            // Các property có [Encrypted]
+            // Properties marked with [Encrypted].
             var encryptedProps = clrType.GetProperties()
                 .Where(p => p.GetCustomAttribute<EncryptedAttribute>() != null)
                 .ToList();
 
             if (encryptedProps.Count == 0) continue;
 
-            // Reflection lấy DbSet<T>
+            // Use reflection to get DbSet<T>.
             var setMethod = typeof(DbContext).GetMethod("Set", Type.EmptyTypes);
             var dbSet = setMethod.MakeGenericMethod(clrType).Invoke(db, null);
 
-            // Chuẩn bị Queryable để batch
+            // Prepare the queryable source for batch processing.
             var queryable = dbSet as IQueryable<object>;
             if (queryable == null)
                 queryable = ((IQueryable)dbSet).Cast<object>();
@@ -75,18 +75,18 @@ public static class DbContextEncryptionExtensions
 
                         try
                         {
-                            // Thử giải mã với oldKey
+                            // Try to decrypt with the old key.
                             plainStr = string.IsNullOrEmpty(oldKey)
                                 ? null
                                 : AesEncryptionHelper.Decrypt(encryptedValueStr, oldKey);
 
-                            // Nếu giải mã thành công, plainStr != null
+                            // If decryption succeeds, plainStr should not be null.
                             if (plainStr == null)
                                 throw new Exception("PlainStr is null after decrypt."); // Force catch
                         }
                         catch
                         {
-                            // Nếu giải mã thất bại, assume đây là dữ liệu gốc (plaintext)
+                            // If decryption fails, assume the value is still plaintext.
                             plainStr = encryptedValueStr;
                             logError?.Invoke(
                                 $"[MigrateEncryptionKey] Entity={clrType.Name} Id={keyPropInfo.GetValue(entity)} Property={prop.Name} was not previously encrypted. Encrypting as new.");
@@ -94,7 +94,7 @@ public static class DbContextEncryptionExtensions
 
                         try
                         {
-                            // Convert về đúng type
+                            // Convert back to the target type.
                             if (targetType == typeof(string))
                                 plainValue = plainStr;
                             else if (targetType == typeof(int))
@@ -114,10 +114,10 @@ public static class DbContextEncryptionExtensions
                             else
                                 throw new NotSupportedException($"Type {targetType.Name} is not supported for encryption migration!");
 
-                            // Mã hóa lại với key mới
+                            // Re-encrypt with the new key.
                             string newEncryptedStr = AesEncryptionHelper.Encrypt(Convert.ToString(plainValue, System.Globalization.CultureInfo.InvariantCulture), newKey);
 
-                            // Đặt lại lên property
+                            // Write the encrypted value back to the property.
                             prop.SetValue(entity, newEncryptedStr);
                         }
                         catch (Exception ex)

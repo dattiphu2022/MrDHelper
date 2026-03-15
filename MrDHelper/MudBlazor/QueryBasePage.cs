@@ -10,7 +10,7 @@ public abstract class QueryBasePage : BasePage
 
     protected abstract string QueryKey { get; }
 
-    // ===== QueryString chuẩn
+    // ===== Standard query string parameters
     [Parameter, SupplyParameterFromQuery(Name = "page")] public int? Page { get; set; }
     [Parameter, SupplyParameterFromQuery(Name = "pageSize")] public int? PageSize { get; set; }
     [Parameter, SupplyParameterFromQuery(Name = "search")] public string? Search { get; set; }
@@ -31,7 +31,7 @@ public abstract class QueryBasePage : BasePage
     {
         base.OnParametersSet();
 
-        // URL -> Store
+        // URL -> store
         var q = new SearchQuery
         {
             Page = Page ?? 0,
@@ -46,7 +46,7 @@ public abstract class QueryBasePage : BasePage
     }
 
     /// <summary>
-    /// UI/Code -> Store -> (tuỳ chọn) sync URL
+    /// Updates the store from UI or code and optionally syncs the URL.
     /// </summary>
     protected void UpdateQueryFromUi(Action<SearchQuery> mutate, bool syncUrl = true, bool replaceHistory = true)
     {
@@ -64,7 +64,7 @@ public abstract class QueryBasePage : BasePage
     {
         var q = QueryStore.Get(QueryKey);
 
-        // bỏ default cho URL gọn
+        // Omit default values to keep the URL compact.
         var uri = NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?>
         {
             ["page"] = q.Page == 0 ? null : q.Page,
@@ -79,7 +79,7 @@ public abstract class QueryBasePage : BasePage
 
     protected virtual void OnQueryChanged(SearchQueryChangedArgs args)
     {
-        // override ở page để ReloadServerData() / gọi API...
+        // Override in a page to reload server data or trigger API calls.
     }
 
     private void OnStoreChanged(SearchQueryChangedArgs args)

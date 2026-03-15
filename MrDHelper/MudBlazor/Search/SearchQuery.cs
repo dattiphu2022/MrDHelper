@@ -11,7 +11,7 @@ public sealed class SearchQuery
     public string? SortBy { get; set; }
     public bool SortDesc { get; set; }
 
-    // filter linh động (f_status=..., f_unitId=..., ...)
+    // Flexible filters (f_status=..., f_unitId=..., ...)
     public Dictionary<string, string?> Filters { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public SearchQuery Normalize(int maxPageSize = 200)

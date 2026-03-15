@@ -10,7 +10,7 @@ public static class AesEncryptionHelper
 
         using var aes = Aes.Create();
         aes.Key = SHA256.HashData(Encoding.UTF8.GetBytes(key)).AsSpan(0, 32).ToArray();
-        aes.IV = new byte[16]; // 128-bit zero IV, bạn có thể random hơn và lưu kèm IV nếu muốn
+        aes.IV = new byte[16]; // 128-bit zero IV. You can randomize it and persist it alongside the ciphertext if needed.
 
         using var ms = new MemoryStream();
         using (var cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))

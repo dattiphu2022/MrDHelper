@@ -7,7 +7,7 @@ namespace MrDHelper.AppDomain.EfSqliteFts5;
 
 public static class VietFts
 {
-    // normalize: bỏ dấu + đ->d + lower + NFC
+    // Normalize by removing diacritics, mapping the Vietnamese d variants to plain d, lowercasing, and converting to NFC.
     public static string Normalize(string input)
     {
         if (string.IsNullOrWhiteSpace(input)) return string.Empty;
@@ -30,7 +30,7 @@ public static class VietFts
         return s;
     }
 
-    // FTS query: token AND token AND token, có prefix token*
+    // FTS query format: token AND token AND token, with optional token* prefix matching.
     public static string BuildMatchQuery(string userInput, bool prefix = true)
     {
         var nd = Normalize(userInput);
@@ -49,7 +49,7 @@ public static class VietFts
 
     private static string Sanitize(string s)
     {
-        // loại ký tự gây lỗi cú pháp MATCH, chuyển thành space
+        // Replace characters that would break MATCH syntax with spaces.
         var sb = new StringBuilder(s.Length);
         foreach (var ch in s)
         {
@@ -63,7 +63,7 @@ public static class VietFts
 
     private static string EscapeToken(string token)
     {
-        // giữ chữ/số/_
+        // Keep only letters, digits, and underscores.
         var sb = new StringBuilder(token.Length);
         foreach (var ch in token)
         {

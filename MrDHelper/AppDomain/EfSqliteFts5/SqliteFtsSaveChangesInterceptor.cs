@@ -61,7 +61,7 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
 
         public override void SaveChangesFailed(DbContextErrorEventData eventData)
         {
-            // fail => bỏ pending
+            // On failure, clear the pending changes.
             var db = eventData.Context;
             if (db is null) return;
             db.Items().Remove(PendingKey);
@@ -121,7 +121,7 @@ namespace MrDHelper.AppDomain.EfSqliteFts5
             if (con.State != System.Data.ConnectionState.Open)
                 await con.OpenAsync(ct);
 
-            // Bám transaction nếu có
+            // Reuse the current transaction when one exists.
             var tx = db.Database.CurrentTransaction?.GetDbTransaction();
 
             foreach (var c in changes)

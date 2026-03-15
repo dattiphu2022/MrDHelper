@@ -6,8 +6,7 @@ namespace MrDHelper.AppData.Extensions;
 public static class QueryablePagingExtensions
 {
     /// <summary>
-    /// Phân trang server-side, chỉ lấy (PageSize + 1) bản ghi để biết còn trang sau hay không.
-    /// Không tính CountAsync() toàn bộ để giảm tải.
+    /// Performs server-side paging.
     /// </summary>
     public static async Task<PagedResult<T>> ToPagedAsync<T>(
             this IQueryable<T> query,
@@ -19,7 +18,7 @@ public static class QueryablePagingExtensions
         if (page < 0) page = 0;
         if (pageSize <= 0) pageSize = 20;
 
-        var total = await query.CountAsync(ct); // Total là int (không null)
+        var total = await query.CountAsync(ct); // Total is an int and never null.
 
         var items = total == 0
             ? []

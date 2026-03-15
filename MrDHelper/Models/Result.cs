@@ -5,7 +5,7 @@ using System.Linq;
 namespace MrDHelper.Models
 {
     /// <summary>
-    /// Đại diện cho một lỗi đơn lẻ, gồm mã lỗi và mô tả hiển thị.
+    /// Represents a single error with a code and display description.
     /// </summary>
     public sealed class Error
     {
@@ -21,13 +21,13 @@ namespace MrDHelper.Models
         }
 
         public override string ToString()
-            => $"Mã lỗi: {Code}.{Environment.NewLine}Mô tả lỗi: {Description}";
+            => $"Error code: {Code}.{Environment.NewLine}Error description: {Description}";
     }
 
     /// <summary>
-    /// Kết quả không generic, có thể chứa một hoặc nhiều lỗi.
-    /// Thành công khi không có lỗi nào.
-    /// Message là thông điệp dùng nhanh cho cả success/failure (có thể null).
+    /// Represents a non-generic result that can contain one or more errors.
+    /// It is successful when there are no errors.
+    /// `Message` is a lightweight message for both success and failure and can be null.
     /// </summary>
     public class Result
     {
@@ -52,7 +52,7 @@ namespace MrDHelper.Models
             Errors = list;
             FirstError = list.FirstOrDefault() ?? Error.None;
 
-            // Message là "dùng nhanh": có thì có, không thì null. Không nhét sentinel.
+            // Message is a lightweight optional value. Keep it null instead of inventing a sentinel.
             Message = NormalizeMessage(message);
         }
 
@@ -60,8 +60,8 @@ namespace MrDHelper.Models
             => new Result(Array.Empty<Error>(), NormalizeMessage(message));
 
         /// <summary>
-        /// Failure chỉ có message: Message sẽ là message (hoặc null nếu rỗng).
-        /// FirstError.Description sẽ là message (hoặc chuỗi rỗng nếu null).
+        /// Failure with only a message. `Message` keeps that value or null if it is empty.
+        /// `FirstError.Description` uses the same message or an empty string if null.
         /// </summary>
         public static Result Failure(string? message = null)
         {
@@ -70,7 +70,7 @@ namespace MrDHelper.Models
         }
 
         /// <summary>
-        /// Failure từ 1 Error: Message đồng bộ theo Error.Description (trim/null nếu rỗng).
+        /// Failure from a single `Error`, keeping `Message` aligned with `Error.Description`.
         /// </summary>
         public static Result Failure(Error error)
         {
@@ -81,7 +81,7 @@ namespace MrDHelper.Models
         }
 
         /// <summary>
-        /// Failure từ code + description: Message đồng bộ theo description (trim/null nếu rỗng).
+        /// Failure from a code and description, keeping `Message` aligned with the description.
         /// </summary>
         public static Result Failure(string code, string description)
         {
@@ -90,7 +90,7 @@ namespace MrDHelper.Models
         }
 
         /// <summary>
-        /// Failure từ nhiều lỗi: Message ưu tiên FirstError.Description (trim/null nếu rỗng).
+        /// Failure from multiple errors, prioritizing `FirstError.Description` as the message.
         /// </summary>
         public static Result Failure(IEnumerable<Error> errors)
         {
@@ -108,8 +108,8 @@ namespace MrDHelper.Models
         }
 
         /// <summary>
-        /// Failure từ nhiều lỗi, kèm message "dùng nhanh" do caller quyết định.
-        /// Nếu message null/rỗng thì Message sẽ null (không tự bịa).
+        /// Failure from multiple errors with an optional lightweight message provided by the caller.
+        /// If the message is null or empty, `Message` remains null.
         /// </summary>
         public static Result Failure(IEnumerable<Error> errors, string? message)
         {
@@ -121,8 +121,8 @@ namespace MrDHelper.Models
 
         public override string ToString()
             => IsSuccess
-                ? (Message is null ? "Thành công" : $"Thành công: {Message}")
-                : (Message is null ? $"Thất bại: {FirstError}" : $"Thất bại: {Message}{Environment.NewLine}{FirstError}");
+                ? (Message is null ? "Success" : $"Success: {Message}")
+                : (Message is null ? $"Failure: {FirstError}" : $"Failure: {Message}{Environment.NewLine}{FirstError}");
 
         public void ThrowIfFailure()
         {
@@ -132,8 +132,8 @@ namespace MrDHelper.Models
     }
 
     /// <summary>
-    /// Kết quả generic chứa giá trị kiểu T khi thành công,
-    /// hoặc một hay nhiều lỗi khi thất bại.
+    /// Represents a generic result that contains a value of type `T` on success,
+    /// or one or more errors on failure.
     /// </summary>
     public sealed class Result<T> : Result
     {
@@ -142,13 +142,13 @@ namespace MrDHelper.Models
         private Result(T value, IEnumerable<Error> errors, string? message = null)
             : base(errors, message)
         {
-            // Giữ đúng invariant:
-            // - Success => Value không null (đối với reference type)
-            // - Failure => Value phải default
+            // Preserve invariants:
+            // - Success => Value is not null for reference types
+            // - Failure => Value must be default
             if (IsSuccess && value is null)
-                throw new ArgumentNullException(nameof(value), "Kết quả thành công phải có giá trị.");
+                throw new ArgumentNullException(nameof(value), "A successful result must contain a value.");
             if (IsFailure && value is not null)
-                throw new ArgumentException("Kết quả thất bại không được có giá trị.", nameof(value));
+                throw new ArgumentException("A failed result cannot contain a value.", nameof(value));
 
             Value = value!;
         }

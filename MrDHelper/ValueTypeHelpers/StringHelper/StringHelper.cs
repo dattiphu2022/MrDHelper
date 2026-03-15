@@ -65,7 +65,7 @@ namespace MrDHelper
             return !string.IsNullOrWhiteSpace(input);
         }
 
-        /// Chuẩn hoá cho tìm kiếm: trim, lower, bỏ dấu (kể cả đ/Đ)
+        /// Normalizes text for search by trimming, lowercasing, and removing diacritics, including the Vietnamese d variants.
         public static string Normalize(this string? input)
         {
             if (string.IsNullOrWhiteSpace(input)) return string.Empty;

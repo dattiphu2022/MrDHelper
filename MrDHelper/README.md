@@ -8,27 +8,19 @@
 [![Nuget version][nugetversion-shield]][nugetversion-url]
 [![Nuget downloads][nugetdownload-shield]][nugetdownload-url]
 
-
-
-<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/dattiphu2022/MrDHelper">
     <img src="Images/logo.jpg" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Mrd common use helper</h3>
+  <h3 align="center">MrD Common Helper</h3>
 </div>
 
-
-
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>      
-    </li>    
+    <li><a href="#about-the-project">About The Project</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -38,25 +30,21 @@
   </ol>
 </details>
 
-
-
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project is providing "extension methods" that are usually used in short way.
+MrDHelper provides commonly used extension methods and helper utilities for .NET applications.
 
-
-<!-- USAGE EXAMPLES -->
+## Usage
 
 New in 2.0.5 + 2.0.6 + 2.0.7
-```c#
 
+```csharp
 Add EfSqliteFts5
-
 ```
-1. Kế thừa
 
-```c#
+1. Inherit from the base types.
+
+```csharp
 using VietFtsSearch;
 
 public sealed class DonVi : AuditableBase, IFtsIndexed, IHasGuidId
@@ -70,19 +58,20 @@ public sealed class DonVi : AuditableBase, IFtsIndexed, IHasGuidId
             .Where(x => !string.IsNullOrWhiteSpace(x)));
 }
 ```
-2. Đăng ký spec 1 lần khi app khởi động
-Ví dụ trong Program.cs (hoặc nơi cấu hình DI):
 
-```c#
+2. Register the spec once at application startup.
+Example in `Program.cs` or your DI setup:
+
+```csharp
 using VietFtsSearch;
 
 FtsRegistry.Register<DonVi>(mainTable: "DonVis", ftsTable: "DonVi_fts", idColumn: "Id");
-// sau này thêm entity khác => thêm 1 dòng Register
-
+// Add another Register line for each additional entity.
 ```
 
-3. Gắn interceptor vào DbContextOptions
-```c#
+3. Add the interceptor to `DbContextOptions`.
+
+```csharp
 using VietFtsSearch;
 using Microsoft.EntityFrameworkCore;
 
@@ -91,81 +80,66 @@ services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite("Data Source=./applicationdatabase.db;");
     opt.AddInterceptors(new SqliteFtsSaveChangesInterceptor());
 });
-
 ```
 
-4. Ensure schema FTS (sau migrate)
-```c#
+4. Ensure the FTS schema after migrations.
+
+```csharp
 using VietFtsSearch;
 
 await db.Database.MigrateAsync();
 await FtsSchema.EnsureFtsTablesAsync(db);
-
 ```
-5. Search
-```c#
+
+5. Search.
+
+```csharp
 using VietFtsSearch;
 
-// FtsSearchOption.DefaultOrder + FtsSearchOption.Include
 var search = new FtsSearchService(db);
 var pagedResult = await search.SearchAsync<DonVi>(SearchQuery, FtsSearchOption, CancelationToken);
 ```
 
-<!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Common functions.
+- [x] Add common functions.
 - [ ] Add more functions.
 
-
-See the [open issues](https://github.com/dattiphu2022/MrDHelper/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/dattiphu2022/MrDHelper/issues) for the full list of proposed features and known issues.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such a great place to learn, inspire, and create. Any contributions you make are greatly appreciated.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would improve the project, fork the repository and create a pull request. You can also open an issue with the `enhancement` tag.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the project.
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+4. Push to the branch: `git push origin feature/AmazingFeature`
+5. Open a pull request.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- CONTACT -->
 ## Contact
 
-Nguyễn Quốc Đạt - [@NguyenQuocĐat1989](https://www.facebook.com/NguyenQuocDat1989)
+Nguyen Quoc Dat - [@NguyenQuocDat1989](https://www.facebook.com/NguyenQuocDat1989)
 
 Project Link: [https://github.com/dattiphu2022/MrDHelper](https://github.com/dattiphu2022/MrDHelper)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
+Helpful resources used by this project:
 
 * [Choose an Open Source License](https://choosealicense.com)
 * [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
@@ -178,10 +152,6 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/dattiphu2022/MrDHelper?style=for-the-badge
 [contributors-url]: https://github.com/dattiphu2022/MrDHelper/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dattiphu2022/MrDHelper?style=for-the-badge

@@ -7,24 +7,24 @@ namespace MrDHelper.AppData.Extensions;
 public static class QueryableSearchExtensions
 {
     /// <summary>
-    /// Tìm kiếm theo 1 từ khóa trên nhiều thuộc tính string (client-side).
-    /// So sánh dựa trên <see cref="StringSearch.Normalize(string)"/> (ví dụ: bỏ dấu, lower-case).
+    /// Searches a single keyword across multiple string properties on the client side.
+    /// Matching uses <see cref="StringSearch.Normalize(string)"/> for normalization such as removing diacritics and lowercasing.
     /// </summary>
-    /// <typeparam name="T">Kiểu phần tử nguồn.</typeparam>
-    /// <param name="source">Nguồn truy vấn.</param>
-    /// <param name="keyword">Từ khóa cần tìm (một từ/chuỗi).</param>
-    /// <param name="stringProperties">Các thuộc tính string cần tìm (có thể là navigation/computed).</param>
-    /// <returns>IQueryable đã lọc (đã materialize sang client trước khi lọc).</returns>
+    /// <typeparam name="T">Source element type.</typeparam>
+    /// <param name="source">Query source.</param>
+    /// <param name="keyword">Keyword to search for.</param>
+    /// <param name="stringProperties">String properties to search, including navigation or computed properties.</param>
+    /// <returns>A filtered `IQueryable` after materializing data to the client.</returns>
     /// <remarks>
-    /// Gọi <c>AsEnumerable()</c> để Normalize ⇒ lọc **phía client**:
-    /// — EF** không thể** tiếp tục dịch sang SQL.
-    /// Vì vậy mọi <c>Include</c>, <c>OrderBy</c>, <c>Skip/Take</c> sau đó đều chạy **client-side**.
-    /// Chỉ dùng với tập nhỏ hoặc sau khi đã giới hạn bằng điều kiện server-side trước.
+    /// Calls <c>AsEnumerable()</c> to normalize values, so filtering runs on the client side.
+    /// EF can no longer translate subsequent operations to SQL.
+    /// As a result, any later <c>Include</c>, <c>OrderBy</c>, or <c>Skip/Take</c> also runs on the client.
+    /// Use this only for small result sets or after applying server-side narrowing first.
     /// </remarks>
     /// <example>
     /// db.Reports
-    ///   .Where(r => r.CreatedAt >= cutoff) // server-side trước
-    ///   .ApplySearch("ha noi", r => r.Title, r => r.Summary); // client-side normalize
+    ///   .Where(r => r.CreatedAt >= cutoff) // server-side first
+    ///   .ApplySearch("ha noi", r => r.Title, r => r.Summary); // client-side normalization
     /// </example>
     public static IQueryable<T> ApplySearchClientSide<T>(
         this IQueryable<T> source,
@@ -38,11 +38,11 @@ public static class QueryableSearchExtensions
         var normKey = keyword.Normalize();
         if (normKey.Length == 0) return source;
 
-        // pre-compile accessors 1 lần để tối ưu
+        // Pre-compile accessors once for better performance.
         var accessors = stringProperties.Select(p => p.Compile()).ToArray();
 
         return source
-            .AsEnumerable() // chuyển sang client filtering (để gọi Normalize)
+            .AsEnumerable() // Switch to client-side filtering so Normalize can be used.
             .Where(item =>
             {
                 foreach (var get in accessors)
@@ -60,17 +60,17 @@ public static class QueryableSearchExtensions
     }
 
     /// <summary>
-    /// Tìm kiếm với **nhiều từ khóa** (phân tách bởi khoảng trắng, xuống dòng, ',' ';')
-    /// theo logic **OR** trên nhiều thuộc tính string (client-side).
+    /// Searches multiple keywords, split by whitespace, new lines, `,`, or `;`,
+    /// using OR logic across multiple string properties on the client side.
     /// </summary>
     /// <remarks>
-    /// Dùng <c>AsEnumerable()</c> để Normalize và tách từ ⇒ lọc **phía client** (giống hàm trên).
-    /// Hạn chế với tập lớn. Cân nhắc giới hạn số từ khóa/độ dài tổng để tránh degrade hiệu năng.
-    /// Hành vi khớp có Normalize (bỏ dấu, lower-case...) nên có thể khác so với server-side LIKE.
+    /// Uses <c>AsEnumerable()</c> to normalize and split tokens, so filtering runs on the client side just like the method above.
+    /// Be careful with large datasets. Consider limiting keyword count or total length to avoid performance degradation.
+    /// Matching behavior may differ from server-side LIKE because normalization removes diacritics and lowercases text.
     /// </remarks>
     /// <example>
     /// db.Reports.ApplySearchAnyClientSide("ha noi e30", r => r.Title, r => r.Summary);
-    /// // match nếu chứa "ha" **hoặc** "noi" **hoặc** "e30"
+    /// // matches if it contains "ha", "noi", or "e30"
     /// </example>
 
     public static IQueryable<T> ApplySearchAnyClientSide<T>(
@@ -103,7 +103,7 @@ public static class QueryableSearchExtensions
                     if (val is null) continue;
 
                     var normVal = val.Normalize();
-                    // chỉ cần chứa 1 key
+                    // Only one keyword needs to match.
                     if (keys.Any(k => normVal.Contains(k)))
                         return true;
                 }
@@ -113,18 +113,16 @@ public static class QueryableSearchExtensions
     }
 
     /// <summary>
-    /// Tìm kiếm **1 từ khóa** theo logic **OR giữa các thuộc tính**,
-    /// tạo biểu thức để EF **dịch sang SQL**: <c>prop LIKE '%keyword%'</c>.
+    /// Searches a single keyword with OR logic across properties,
+    /// building an expression that EF can translate to SQL as <c>prop LIKE '%keyword%'</c>.
     /// </summary>
     /// <remarks>
-    /// Không Normalize (phụ thuộc collation DB):
-    /// - Độ nhạy hoa/thường và dấu (diacritics) do collation quyết định.
-    /// - Nếu cần hành vi như client-side (bỏ dấu, case-insensitive), cần:
-    ///   (1) dùng collation phù hợp, hoặc
-    ///   (2) tạo computed column đã-normalize, hoặc
-    ///   (3) map đến SQL function custom.
-    /// Chú ý: <paramref name="keyword"/> nếu chứa wildcard (<c>%</c>, <c>_</c>) sẽ tham gia pattern của LIKE.
-    /// Cân nhắc escape nếu muốn so khớp theo literal.
+    /// Does not normalize values and therefore depends on the database collation.
+    /// Case sensitivity and diacritic handling are controlled by the collation.
+    /// If you need behavior similar to the client-side version, consider using a suitable collation,
+    /// a normalized computed column, or a mapped custom SQL function.
+    /// Note that <paramref name="keyword"/> participates directly in the LIKE pattern when it contains wildcards such as <c>%</c> or <c>_</c>.
+    /// Escape the keyword if you need literal matching.
     /// </remarks>
     /// <example>
     /// db.Reports.ApplySearchAnyServerSide("ha", r => r.Title, r => r.Summary);
@@ -148,11 +146,11 @@ public static class QueryableSearchExtensions
         Expression? combined = null;
         foreach (var propExpr in stringProperties)
         {
-            // Thay thế parameter của propExpr bằng param chung
+            // Replace the property expression parameter with the shared parameter.
             var visitor = new ReplaceParameterVisitor(propExpr.Parameters[0], param);
             var body = visitor.Visit(propExpr.Body)!;
 
-            // Điều kiện: prop != null && EF.Functions.Like(prop, pattern)
+            // Condition: prop != null && EF.Functions.Like(prop, pattern)
             var notNull = Expression.NotEqual(body, Expression.Constant(null, typeof(string)));
 
             var efFunctions = Expression.Property(null, typeof(EF), nameof(EF.Functions));
@@ -172,9 +170,9 @@ public static class QueryableSearchExtensions
     }
 
     /// <summary>
-    /// Thay thế tham số cũ bằng tham số mới trong biểu thức,
-    /// giúp gom nhiều biểu thức thuộc tính về chung một <see cref="ParameterExpression"/>
-    /// để có thể kết hợp (OR/AND) trong cùng một lambda.
+    /// Replaces the original parameter with a new parameter in an expression,
+    /// allowing multiple property expressions to share one <see cref="ParameterExpression"/>
+    /// so they can be combined with OR or AND inside a single lambda.
     /// </summary>
 
     private class ReplaceParameterVisitor : ExpressionVisitor

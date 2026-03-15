@@ -10,18 +10,18 @@ using System.Diagnostics;
 namespace MrDHelper.MudBlazor;
 
 /// <summary>
-/// BasePage cho Blazor Server: gom tiện ích thường dùng cho trang/component.
+/// Base page for Blazor Server that centralizes common page and component helpers.
 /// </summary>
 public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
 {
-    // ===== Inject phổ biến
+    // ===== Common injected services
     [Inject] protected ILoggerFactory LoggerFactory { get; set; } = default!;
     [Inject] protected ISnackbar Snackbar { get; set; } = default!;
     [Inject] protected IDialogService DialogService { get; set; } = default!;
     [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 
-    // ===== Busy / Token
+    // ===== Busy state / cancellation token
     private int _busyDepth = 0;
     protected bool Busy => _busyDepth > 0;
     protected readonly CancellationTokenSource Cts = new();
@@ -32,13 +32,13 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _debouncers = new();
     private readonly ConcurrentDictionary<string, long> _throttleTicks = new();
 
-    // ===== Before unload guard
+    // ===== Before-unload guard
     private IJSObjectReference? _jsModule;
     protected bool HasUnsavedChanges { get; set; }
 
     // ===== Public helpers
 
-    /// <summary>Gói hành động async với Busy + catch + toast + log.</summary>
+    /// <summary>Wraps an async action with busy state, error handling, toast notifications, and logging.</summary>
     protected async Task Wrap(Func<Task> action, string? busyMessage = null, bool toastError = true)
     {
         BeginBusy();
@@ -49,7 +49,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
 
             await action();
         }
-        catch (OperationCanceledException) { /* bỏ qua khi hủy */ }
+        catch (OperationCanceledException) { /* Ignore cancellation. */ }
         catch (Exception ex)
         {
             if (toastError) Error(ex.Message);
@@ -62,7 +62,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         }
     }
 
-    /// <summary>Wrap có trả về kiểu T.</summary>
+    /// <summary>Typed wrap that returns a value of type `T`.</summary>
     protected async Task<T?> Wrap<T>(Func<Task<T>> func, string? busyMessage = null, bool toastError = true)
     {
         BeginBusy();
@@ -87,7 +87,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         }
     }
 
-    /// <summary>Chạy pipeline Result T→Result, toast lỗi khi Failure.</summary>
+    /// <summary>Runs a `Result<T>` pipeline and shows an error toast on failure.</summary>
     protected async Task<Result<T>> RunResult<T>(Func<CancellationToken, Task<Result<T>>> action)
     {
         try
@@ -98,7 +98,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         }
         catch (OperationCanceledException)
         {
-            return Result<T>.Failure("CANCELLED", "Đã hủy tác vụ.");
+            return Result<T>.Failure("CANCELLED", "The operation was canceled.");
         }
         catch (Exception ex)
         {
@@ -108,8 +108,8 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         }
     }
 
-    /// <summary>Hiển thị dialog xác nhận (MudBlazor).</summary>
-    protected async Task<bool> ConfirmAsync(string title, string message, string yes = "Đồng ý", string no = "Hủy", Color yesColor = Color.Error)
+    /// <summary>Displays a confirmation dialog with MudBlazor.</summary>
+    protected async Task<bool> ConfirmAsync(string title, string message, string yes = "Confirm", string no = "Cancel", Color yesColor = Color.Error)
     {
         var parameters = new DialogParameters
     {
@@ -126,7 +126,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         return !result!.Canceled;
     }
 
-    /// <summary>Debounce một hành động theo key: nếu gọi liên tiếp, chỉ chạy lần cuối sau delay.</summary>
+    /// <summary>Debounces an action by key so only the last call runs after the delay.</summary>
     protected async Task DebounceAsync(string key, int delayMs, Func<Task> action)
     {
         var cts = _debouncers.AddOrUpdate(key,
@@ -138,7 +138,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
             await Task.Delay(delayMs, cts.Token);
             await action();
         }
-        catch (OperationCanceledException) { /* bị debounce */ }
+        catch (OperationCanceledException) { /* Canceled by debounce. */ }
         finally
         {
             _debouncers.TryRemove(key, out var removed);
@@ -146,7 +146,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         }
     }
 
-    /// <summary>Throttle: bảo đảm tối thiểu intervalMs giữa hai lần chạy cùng key.</summary>
+    /// <summary>Throttles calls by ensuring a minimum interval between executions for the same key.</summary>
     protected async Task ThrottleAsync(string key, int intervalMs, Func<Task> action)
     {
         var now = Stopwatch.GetTimestamp();
@@ -160,7 +160,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         await action();
     }
 
-    /// <summary>Retry với backoff (ví dụ cho call mạng/DB).</summary>
+    /// <summary>Retries an action with backoff, for example for network or database calls.</summary>
     protected async Task RetryAsync(Func<CancellationToken, Task> action, int attempts = 3, int initialDelayMs = 200)
     {
         var delay = initialDelayMs;
@@ -177,7 +177,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
                 if (i == attempts)
                 {
                     CreateLogger()?.LogError(ex, "Retry failed after {Attempts}", attempts);
-                    Error("Thao tác thất bại. Vui lòng thử lại.");
+                    Error("The operation failed. Please try again.");
                     throw;
                 }
                 await Task.Delay(delay, Token);
@@ -186,14 +186,14 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         }
     }
 
-    /// <summary>Điều hướng an toàn (kèm forceLoad nếu cần).</summary>
+    /// <summary>Navigates safely, optionally using force load.</summary>
     protected void NavigateSafe(string uri, bool forceLoad = false, bool replace = false)
     {
         try { NavigationManager.NavigateTo(uri, forceLoad: forceLoad, replace: replace); }
         catch (Exception ex) { CreateLogger()?.LogError(ex, "NavigateSafe error: {Uri}", uri); }
     }
 
-    /// <summary>Gắn/hủy cảnh báo "rời trang sẽ mất thay đổi".</summary>
+    /// <summary>Enables or disables a warning when leaving the page would discard changes.</summary>
     protected async Task SetBeforeUnloadGuardAsync(bool enable)
     {
         try
@@ -206,7 +206,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
         catch (Exception ex) { CreateLogger()?.LogWarning(ex, "SetBeforeUnloadGuardAsync failed"); }
     }
 
-    // ===== Snackbar nhanh
+    // ===== Snackbar shortcuts
     protected void Success(string msg) => Snackbar.Add(msg, Severity.Success);
     protected void Info(string msg) => Snackbar.Add(msg, Severity.Info);
     protected void Warning(string msg) => Snackbar.Add(msg, Severity.Warning);
@@ -221,7 +221,7 @@ public abstract class BasePage : MudComponentBase, IDisposable, IAsyncDisposable
     {
         try { await InvokeAsync(StateHasChanged); }
         catch (ObjectDisposedException) { /* ignore */ }
-        catch (InvalidOperationException) { /* ignore when circuit swapping */ }
+        catch (InvalidOperationException) { /* Ignore transient circuit changes. */ }
     }
 
     // ===== Busy helpers

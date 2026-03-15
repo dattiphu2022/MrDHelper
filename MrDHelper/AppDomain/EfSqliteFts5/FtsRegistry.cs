@@ -3,7 +3,7 @@
 
 public static class FtsRegistry
 {
-    // đăng ký 1 lần cho toàn app
+    // Register once for the entire application.
     private static readonly Dictionary<Type, FtsSpec> _specs = new();
     private static readonly object _gate = new();
 
@@ -46,12 +46,12 @@ public static class FtsRegistry
     private static string RequireSafeIdentifier(string s)
     {
         if (string.IsNullOrWhiteSpace(s))
-            throw new ArgumentException("Identifier rỗng.", nameof(s));
+            throw new ArgumentException("Identifier cannot be empty.", nameof(s));
 
         foreach (var ch in s)
         {
             if (!(char.IsLetterOrDigit(ch) || ch == '_'))
-                throw new ArgumentException($"Identifier không an toàn: {s}");
+                throw new ArgumentException($"Unsafe identifier: {s}");
         }
         return s;
     }

@@ -5,16 +5,16 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
 {
     public static class GeoPointHelper
     {
-        // Bán kính Trái Đất trung bình (m)
+        // Average Earth radius in meters.
         private const double _earthRadiusMeters = 6_371_008.8;
 
 
         /// <summary>
-        /// Chuyển đổi khoảng cách (mét) thành chuỗi thân thiện: "xxx m" hoặc "x.x km".
+        /// Converts a distance in meters into a human-friendly string such as "xxx m" or "x.x km".
         /// </summary>
-        /// <param name="meters">Giá trị khoảng cách theo mét.</param>
-        /// <param name="round">Nếu true, làm tròn (mét hoặc km) theo cách dễ đọc.</param>
-        /// <param name="integerOnly">Nếu true, chỉ lấy phần nguyên (bỏ phần thập phân).</param>
+        /// <param name="meters">Distance value in meters.</param>
+        /// <param name="round">If true, rounds the value in a readable way for meters or kilometers.</param>
+        /// <param name="integerOnly">If true, returns only the integer part without decimals.</param>
         public static string ToReadableDistance(this double meters, bool round = true, bool integerOnly = false)
         {
             if (double.IsNaN(meters) || double.IsInfinity(meters))
@@ -25,7 +25,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
 
             if (meters < 1000)
             {
-                // Dưới 1 km => hiển thị m
+                // Below 1 km, display meters.
                 double value = round ? Math.Round(meters) : meters;
                 if (integerOnly)
                     value = Math.Floor(value);
@@ -33,7 +33,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
             }
             else
             {
-                // Trên 1 km => hiển thị km
+                // At or above 1 km, display kilometers.
                 double km = meters / 1000.0;
                 double value = round ? Math.Round(km, km >= 10 ? 0 : 1) : km;
                 if (integerOnly)
@@ -43,7 +43,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
         }
 
         /// <summary>
-        /// Rút gọn hiển thị cho UI: "300m", "2.1km"
+        /// Returns a compact UI-friendly distance such as "300m" or "2.1km".
         /// </summary>
         public static string ToCompactDistance(this double meters)
         {
@@ -54,7 +54,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
         }
 
         /// <summary>
-        /// Trả về phần nguyên của khoảng cách (bỏ phần thập phân)
+        /// Returns the integer portion of the distance, dropping the decimal part.
         /// </summary>
         public static int ToMetersInt(this double meters)
         {
@@ -62,8 +62,8 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
         }
 
         /// <summary>
-        /// Khoảng cách "tương đối" (xấp xỉ, nhanh) giữa 2 điểm (mét).
-        /// Khuyến nghị dùng cho cự ly ngắn (vài chục km đổ lại) để tối ưu hiệu năng.
+        /// Calculates an approximate, fast distance between two points in meters.
+        /// Recommended for short ranges to optimize performance.
         /// </summary>
         public static double ApproxDistanceMetersTo(this GeoPoint from, GeoPoint to)
         {
@@ -82,8 +82,8 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
         }
 
         /// <summary>
-        /// Khoảng cách chính xác hơn bằng Haversine (mét).
-        /// Dùng khi cần độ chính xác cao (cự ly xa, báo cáo, lưu trữ).
+        /// Calculates a more accurate Haversine distance in meters.
+        /// Use this when higher accuracy is required for longer distances, reporting, or storage.
         /// </summary>
         public static double HaversineDistanceMetersTo(this GeoPoint from, GeoPoint to)
         {
@@ -105,7 +105,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
         }
 
         /// <summary>
-        /// Góc phương vị (bearing) từ from -> to (độ, 0° = Bắc, tăng chiều kim đồng hồ).
+        /// Calculates the bearing from `from` to `to` in degrees, where 0 is North and values increase clockwise.
         /// </summary>
         public static double BearingDegreesTo(this GeoPoint from, GeoPoint to)
         {

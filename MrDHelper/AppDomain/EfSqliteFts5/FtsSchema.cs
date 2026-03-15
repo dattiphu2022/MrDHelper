@@ -8,7 +8,7 @@ public static class FtsSchema
     {
         foreach (var spec in FtsRegistry.All)
         {
-            // Identifier đã whitelist trong registry => có thể ghép string an toàn
+            // Identifiers are already whitelisted in the registry, so string interpolation is safe here.
             var sql = $@"
 CREATE VIRTUAL TABLE IF NOT EXISTS {spec.FtsTable}
 USING fts5(

@@ -59,7 +59,7 @@ public partial class SearchBox : ComponentBase, IDisposable
     {
         _value = value;
 
-        // [CHANGED] tự debounce ở đây (không dựa MudTextField DebounceInterval)
+        // Debounce is handled here instead of relying on MudTextField.DebounceInterval.
         _debounceCts?.Cancel();
         _debounceCts?.Dispose();
         _debounceCts = new CancellationTokenSource();
@@ -71,7 +71,7 @@ public partial class SearchBox : ComponentBase, IDisposable
             {
                 await Task.Delay(DebounceInterval, token);
 
-                // Sau debounce mới update Store (không sync URL)
+                // Update the store only after debounce completes, without syncing the URL.
                 QueryStore.UpdateActive(q =>
                 {
                     q.Search = string.IsNullOrWhiteSpace(_value) ? null : _value!.Trim();
@@ -88,7 +88,7 @@ public partial class SearchBox : ComponentBase, IDisposable
     {
         if (e.Key == "Enter")
         {
-            // [CHANGED] Enter = hủy debounce pending + commit ngay
+            // Pressing Enter cancels any pending debounce and commits immediately.
             _debounceCts?.Cancel();
 
             CommitSearchFromTextbox();
@@ -144,7 +144,7 @@ public partial class SearchBox : ComponentBase, IDisposable
 
         var q = QueryStore.GetActive();
 
-        // Giữ URL gọn: bỏ param nếu là default/null
+        // Keep the URL compact by omitting default or null parameters.
         var uri = NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?>
         {
             ["page"] = q.Page == 0 ? null : q.Page,
