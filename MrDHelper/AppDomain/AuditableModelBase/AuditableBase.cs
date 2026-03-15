@@ -14,7 +14,7 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         public bool IsDeleted { get; set; }
 
         [Timestamp]
-        public byte[] RowVersion { get; set; } = CreateNewRowVersion();
+        public byte[]? RowVersion { get; set; } = CreateNewRowVersion();
 
         protected static byte[] CreateNewRowVersion()
         {
@@ -33,7 +33,7 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         public bool IsDeleted { get; set; }
 
         [Timestamp]
-        public byte[] RowVersion { get; set; } = CreateNewRowVersion();
+        public byte[]? RowVersion { get; set; } = CreateNewRowVersion();
 
         protected static byte[] CreateNewRowVersion()
         {
