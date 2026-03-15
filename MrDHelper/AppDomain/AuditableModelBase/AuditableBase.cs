@@ -14,12 +14,7 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         public bool IsDeleted { get; set; }
 
         [Timestamp]
-        public byte[]? RowVersion { get; set; } = CreateNewRowVersion();
-
-        protected static byte[] CreateNewRowVersion()
-        {
-            return Guid.NewGuid().ToByteArray();
-        }
+        public long Version { get; set; } = 1;
     }
 
     public abstract class AuditableBase<TIdType> : IAuditable
@@ -33,11 +28,6 @@ namespace MrDHelper.AppDomain.AuditableModelBase
         public bool IsDeleted { get; set; }
 
         [Timestamp]
-        public byte[]? RowVersion { get; set; } = CreateNewRowVersion();
-
-        protected static byte[] CreateNewRowVersion()
-        {
-            return Guid.NewGuid().ToByteArray();
-        }
+        public long Version { get; set; } = 1;
     }
 }

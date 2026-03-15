@@ -52,29 +52,41 @@ namespace MrDHelper.AppData.Base
                     case EntityState.Added:
                         entry.Entity.CreatedDate = now;
                         entry.Entity.CreatedBy = userName;
-                        entry.Entity.RowVersion = Guid.NewGuid().ToByteArray();
+                        if (entry.Entity.Version <= 0)
+                            entry.Entity.Version = 1;
                         break;
                     case EntityState.Modified:
                         entry.Entity.EditedDate = now;
                         entry.Entity.EditedBy = userName;
-                        entry.Entity.RowVersion = Guid.NewGuid().ToByteArray();
+                        entry.Entity.Version += 1;
                         break;
                     case EntityState.Deleted:
                         entry.Entity.IsDeleted = true;
+                        entry.Entity.EditedDate = now;
+                        entry.Entity.EditedBy = userName;
+                        entry.Entity.Version += 1;
                         entry.State = EntityState.Modified;
                         break;
                 }
 
                 foreach (var property in entry.Properties)
                 {
-                    if (!property.IsModified || property.Metadata.Name == "UpdatedDate" || property.Metadata.Name == "UpdatedBy")
+                    if (!property.IsModified
+                        || property.Metadata.Name == nameof(IAuditable.EditedDate)
+                        || property.Metadata.Name == nameof(IAuditable.EditedBy)
+                        || property.Metadata.Name == nameof(IAuditable.Version))
+                    {
                         continue;
+                    }
 
                     var entityId = entry.Properties.Any(p => p.Metadata.Name == "Id")
                         ? entry.Property("Id")?.CurrentValue?.ToString()
                         : null;
 
-                    if (string.IsNullOrEmpty(entityId)) continue;
+                    if (string.IsNullOrEmpty(entityId))
+                    {
+                        continue;
+                    }
 
                     auditEntries.Add(new AuditEntry
                     {
