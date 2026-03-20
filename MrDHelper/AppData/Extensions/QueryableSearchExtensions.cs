@@ -35,7 +35,7 @@ public static class QueryableSearchExtensions
         if (string.IsNullOrWhiteSpace(keyword) || stringProperties is null || stringProperties.Length == 0)
             return source;
 
-        var normKey = keyword.Normalize();
+        var normKey = StringHelper.Normalize(keyword);
         if (normKey.Length == 0) return source;
 
         // Pre-compile accessors once for better performance.
@@ -50,7 +50,7 @@ public static class QueryableSearchExtensions
                     var val = get(item);
                     if (val is null) continue;
 
-                    var normVal = val.Normalize();
+                    var normVal = StringHelper.Normalize(val);
                     if (normVal.Contains(normKey))
                         return true;
                 }
@@ -102,7 +102,7 @@ public static class QueryableSearchExtensions
                     var val = get(item);
                     if (val is null) continue;
 
-                    var normVal = val.Normalize();
+                    var normVal = StringHelper.Normalize(val);
                     // Only one keyword needs to match.
                     if (keys.Any(k => normVal.Contains(k)))
                         return true;
@@ -134,7 +134,8 @@ public static class QueryableSearchExtensions
         string? keyword,
         params Expression<Func<T, string?>>[] stringProperties)
     {
-        if (string.IsNullOrWhiteSpace(keyword) || stringProperties.Length == 0)
+        if (source is null) throw new ArgumentNullException(nameof(source));
+        if (string.IsNullOrWhiteSpace(keyword) || stringProperties is null || stringProperties.Length == 0)
             return source;
 
         keyword = keyword.Trim();

@@ -14,13 +14,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>extension; extensions; helper; helpers; mrdhelper</PackageTags>
     <PackageReleaseNotes>
-      Remove: ConnectionStringHelper
-      Update: README.md for more details in the documentation.
+      Fixing bugs
     </PackageReleaseNotes>
     <Authors>Nguyen Quoc Dat</Authors>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>2.2.1</Version>
+    <Version>3.0</Version>
     <Platforms>AnyCPU</Platforms>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -46,22 +45,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.*" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.*" />
-    <PackageReference Include="System.Text.Json" Version="9.*" />
-    <PackageReference Include="MudBlazor" Version="8.*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+    <PackageReference Include="MailKit" Version="[4.15.1]" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[9.0.14]" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[9.0.14]" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="[9.0.14]" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="[2.3.9]" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="[9.0.14]" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="[5.0.0]" />
+    <PackageReference Include="System.Text.Json" Version="[9.0.14]" />
+    <PackageReference Include="MudBlazor" Version="[8.15.0]" />
   </ItemGroup>
 
 </Project>

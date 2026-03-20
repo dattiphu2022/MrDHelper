@@ -9,7 +9,8 @@
             get {
                 try
                 {
-                    return Datas[propertyName];
+                    var datas = Datas ?? throw new NullReferenceException();
+                    return datas[propertyName];
                 }
                 catch (Exception)
                 {
@@ -20,11 +21,17 @@
             {
                 try
                 {
-                    Datas[propertyName] = value;
+                    var datas = Datas ?? throw new NullReferenceException();
+                    datas[propertyName] = value;
                 }
                 catch (Exception)
                 {
-                    Datas.Add(propertyName, value);
+                    var datas = Datas;
+                    if (datas is null)
+                    {
+                        throw;
+                    }
+                    datas.Add(propertyName, value);
                 }; 
             }
         }
@@ -39,6 +46,7 @@
         public void Dispose()
         {
             Datas = null;
+            GC.SuppressFinalize(this);
         }
     }
 }

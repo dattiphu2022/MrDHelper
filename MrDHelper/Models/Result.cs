@@ -147,7 +147,7 @@ namespace MrDHelper.Models
             // - Failure => Value must be default
             if (IsSuccess && value is null)
                 throw new ArgumentNullException(nameof(value), "A successful result must contain a value.");
-            if (IsFailure && value is not null)
+            if (IsFailure && !EqualityComparer<T>.Default.Equals(value, default!))
                 throw new ArgumentException("A failed result cannot contain a value.", nameof(value));
 
             Value = value!;
@@ -192,7 +192,7 @@ namespace MrDHelper.Models
             return new Result<T>(default!, list, firstDesc);
         }
 
-        public static Result<T> Failure(IEnumerable<Error> errors, string? message)
+        public static new Result<T> Failure(IEnumerable<Error> errors, string? message)
         {
             if (errors is null) throw new ArgumentNullException(nameof(errors));
 

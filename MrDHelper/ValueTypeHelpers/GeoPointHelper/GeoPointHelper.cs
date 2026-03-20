@@ -1,5 +1,6 @@
 ﻿using MrDHelper.Models;
 using System;
+using System.Globalization;
 
 namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
 {
@@ -29,7 +30,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
                 double value = round ? Math.Round(meters) : meters;
                 if (integerOnly)
                     value = Math.Floor(value);
-                return $"{value:0} m";
+                return $"{value.ToString("0", CultureInfo.InvariantCulture)} m";
             }
             else
             {
@@ -38,7 +39,7 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
                 double value = round ? Math.Round(km, km >= 10 ? 0 : 1) : km;
                 if (integerOnly)
                     value = Math.Floor(value);
-                return $"{value:0.#} km";
+                return $"{value.ToString("0.#", CultureInfo.InvariantCulture)} km";
             }
         }
 
@@ -48,9 +49,9 @@ namespace MrDHelper.ValueTypeHelpers.GeoPointHelper
         public static string ToCompactDistance(this double meters)
         {
             if (meters < 1000)
-                return $"{Math.Round(meters):0}m";
+                return $"{Math.Round(meters).ToString("0", CultureInfo.InvariantCulture)}m";
             else
-                return $"{Math.Round(meters / 1000.0, 1):0.#}km";
+                return $"{Math.Round(meters / 1000.0, 1).ToString("0.#", CultureInfo.InvariantCulture)}km";
         }
 
         /// <summary>

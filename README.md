@@ -1,199 +1,231 @@
-<div id="top"></div>
+# MrDHelper
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![Nuget version][nugetversion-shield]][nugetversion-url]
-[![Nuget downloads][nugetdownload-shield]][nugetdownload-url]
+[![NuGet version](https://img.shields.io/nuget/v/MrDHelper?style=for-the-badge)](https://www.nuget.org/packages/MrDHelper)
+[![NuGet downloads](https://img.shields.io/nuget/dt/MrDHelper?style=for-the-badge)](https://www.nuget.org/packages/MrDHelper)
+[![License](https://img.shields.io/github/license/dattiphu2022/MrDHelper?style=for-the-badge)](LICENSE.txt)
 
-<br />
-<div align="center">
-  <a href="https://github.com/dattiphu2022/MrDHelper">
-    <img src="Images/logo.jpg" alt="Logo" width="80" height="80">
-  </a>
+Common helpers and extension methods for .NET projects, with support for:
 
-  <h3 align="center">MrD Common Helper</h3>
-</div>
+- collection helpers
+- string, bool, date, and geo utilities
+- `Result` / `Result<T>` models
+- `DisplayAttribute` reflection helpers
+- EF Core paging and search extensions
+- SQLite FTS5 integration
+- MudBlazor search state helpers
 
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
+## Target Framework
 
-## About The Project
+- `.NET 9`
 
-MrDHelper provides commonly used extension methods and helper utilities for .NET applications.
+## Installation
 
-## Usage
-
-1. Reference `MrDHelper`.
-2. Add `using MrDHelper`.
-3. Call the extension methods you need.
-
-```csharp
-IEnumerable<T>?.ForEach<T>(Action<T>);
-IEnumerable<T>?.ForEachAsync<T>(Fun<T, Task>);
-
-IList<T>.AddDummyItemsToMaximumCountOf<T>(int collectionFinalCount, T fillValue);
-
-<T>.IsNull(); <T>.NotNull();
-
-bool?.IsFalse(); bool?.IsTrue();
-bool?.NotFalse(); bool?.NotTrue();
-
-"string".GetMd5();
-"string".IsNullOrEmpty(); "string".IsNullOrWhiteSpace();
-"string".NotNullOrEmpty(); "string".NotNullOrWhiteSpace();
-
-TaskHelper.RunSync<TResult>(Func<Task<TResult>, TResult>);
+```bash
+dotnet add package MrDHelper
 ```
 
-New in 1.0.8 + 1.0.9
+## Quick Start
 
 ```csharp
-var someClass = new SomeClass();
-var cell = SomeClass.ConvertToCell(someClass);
-cell[nameof(SomeClass.Property1)] = newValue;
-var otherSomeClass = cell.ConvertTo<SomeClass>();
+using MrDHelper;
+using MrDHelper.CollectionHelpers.IEnummerableHelper;
+using MrDHelper.CollectionHelpers.IListHelper;
+using MrDHelper.Models;
+
+var values = new[] { 1, 2, 3 };
+var total = 0;
+
+values.ForEach(x => total += x);
+
+var md5 = "hello".GetMd5();
+var normalized = StringHelper.Normalize("  Ha Noi  ");
+
+var result = Result<int>.Ok(total, "done");
 ```
 
-New in 2.0.5 + 2.0.6 + 2.0.7
+## Main Features
+
+### Collection Helpers
 
 ```csharp
-Add EfSqliteFts5
+using MrDHelper.CollectionHelpers.IEnummerableHelper;
+using MrDHelper.CollectionHelpers.IListHelper;
+
+IEnumerable<int> numbers = new[] { 1, 2, 3 };
+await numbers.ForEachAsync(async x => await Task.Delay(x));
+
+IList<string> items = new List<string> { "A" };
+items.AddDummyItemsToMaximumCountOf(3, "-");
+// Result: [ "A", "-", "-" ]
 ```
 
-1. Inherit from the base types.
+### Primitive and Value Helpers
 
 ```csharp
-using VietFtsSearch;
+using MrDHelper;
+using MrDHelper.ValueTypeHelpers.BoolHelper;
+using MrDHelper.ValueTypeHelpers.DateTimeHelper;
+using MrDHelper.ValueTypeHelpers.GeoPointHelper;
 
-public sealed class DonVi : AuditableBase, IFtsIndexed, IHasGuidId
+var isEmpty = "".IsNullOrEmpty();
+var isTrue = ((bool?)true).IsTrue();
+var when = DateTimeOffset.UtcNow.ToVietnamString();
+var compact = 1540d.ToCompactDistance(); // "1.5km"
+```
+
+### Result Models
+
+```csharp
+using MrDHelper.Models;
+
+var success = Result<string>.Ok("payload", "completed");
+var failure = Result<string>.Failure("VALIDATION", "Invalid input");
+
+var message = success.Match(
+    onSuccess: value => $"OK: {value}",
+    onFailure: error => $"ERR: {error.Description}");
+```
+
+### DisplayAttribute Helpers
+
+```csharp
+using MrDHelper.GenericHelper;
+
+var displayName = myEnumValue.GetDisplayName();
+var orderedProps = DisplayExtensions.GetDisplayOrderedProperties(typeof(MyViewModel));
+var enumItems = DisplayExtensions.GetValueLabelListForEnum<MyEnum>();
+```
+
+### Cell Conversion Helpers
+
+```csharp
+using MrDHelper.CellHelpers;
+
+var cell = model.ConvertToCell();
+cell["Name"] = "Updated";
+
+var restored = cell.ConvertTo<MyModel>();
+```
+
+### EF Core Paging and Search
+
+```csharp
+using MrDHelper.AppData.Extensions;
+
+var page = await db.Reports
+    .AsNoTracking()
+    .ApplySearchClientSide("ha noi", x => x.Title, x => x.Summary)
+    .OrderBy(x => x.Id)
+    .ToPagedAsync(page: 0, pageSize: 20);
+```
+
+Available extensions include:
+
+- `ToPagedAsync`
+- `ToPagedSliceAsync`
+- `ApplySearchClientSide`
+- `ApplySearchAnyClientSide`
+- `ApplySearchAnyServerSide`
+
+### SQLite FTS5
+
+`MrDHelper` includes a lightweight SQLite FTS5 integration layer for EF Core.
+
+1. Implement `IHasGuidId` and `IFtsIndexed`.
+
+```csharp
+using MrDHelper.AppDomain.EfSqliteFts5;
+
+public sealed class DonVi : IHasGuidId, IFtsIndexed
 {
-    public string PhienHieu { get; set; } = string.Empty;
-    public string TenDayDu { get; set; } = string.Empty;
-    public string? TenVietTat { get; set; }
+    public Guid Id { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     public string BuildFtsAllText()
-        => string.Join(" | ", new[] { PhienHieu, TenDayDu, TenVietTat }
-            .Where(x => !string.IsNullOrWhiteSpace(x)));
+        => string.Join(" | ", new[] { Code, Name });
 }
 ```
 
-2. Register the spec once at application startup.
-Example in `Program.cs` or your DI setup:
+2. Register the FTS mapping once at startup.
 
 ```csharp
-using VietFtsSearch;
+using MrDHelper.AppDomain.EfSqliteFts5;
 
-FtsRegistry.Register<DonVi>(mainTable: "DonVis", ftsTable: "DonVi_fts", idColumn: "Id");
-// Add another Register line for each additional entity.
+FtsRegistry.Register<DonVi>(
+    mainTable: "DonVis",
+    ftsTable: "DonVi_fts",
+    idColumn: "Id");
 ```
 
-3. Add the interceptor to `DbContextOptions`.
+3. Add the save interceptor and ensure the FTS schema.
 
 ```csharp
-using VietFtsSearch;
 using Microsoft.EntityFrameworkCore;
+using MrDHelper.AppDomain.EfSqliteFts5;
 
-services.AddDbContext<AppDbContext>(opt =>
+services.AddDbContext<AppDbContext>(options =>
 {
-    opt.UseSqlite("Data Source=./applicationdatabase.db;");
-    opt.AddInterceptors(new SqliteFtsSaveChangesInterceptor());
+    options.UseSqlite("Data Source=app.db");
+    options.AddInterceptors(new SqliteFtsSaveChangesInterceptor());
 });
-```
-
-4. Ensure the FTS schema after migrations.
-
-```csharp
-using VietFtsSearch;
 
 await db.Database.MigrateAsync();
 await FtsSchema.EnsureFtsTablesAsync(db);
 ```
 
-5. Search.
+4. Search with `FtsSearchService`.
 
 ```csharp
-using VietFtsSearch;
+using MrDHelper.AppDomain.EfSqliteFts5;
+using MrDHelper.MudBlazor.Search;
 
-var search = new FtsSearchService(db);
-var pagedResult = await search.SearchAsync<DonVi>(SearchQuery, FtsSearchOption, CancelationToken);
+var service = new FtsSearchService(db);
+
+var result = await service.SearchAsync<DonVi>(
+    new SearchQuery { Search = "ha noi", Page = 0, PageSize = 20 },
+    q => q.OrderBy(x => x.Name),
+    cancellationToken);
 ```
 
-## Roadmap
+### MudBlazor Search State
 
-- [x] Add common functions.
-- [ ] Add more functions.
+```csharp
+using MrDHelper.MudBlazor.Search;
 
-See the [open issues](https://github.com/dattiphu2022/MrDHelper/issues) for the full list of proposed features and known issues.
+var store = new SearchQueryStore();
+store.SetActiveKey("users");
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+store.UpdateActive(query =>
+{
+    query.Search = "admin";
+    query.Page = 0;
+}, SearchQueryChangeSource.Ui);
+```
+
+## Test
+
+```bash
+dotnet test MrDHelper.sln
+```
+
+## Repository Structure
+
+- `MrDHelper/`: library source
+- `MrDHelper.Tests/`: NUnit test project
+- `Images/`: package and repository assets
 
 ## Contributing
 
-Contributions are what make the open source community such a great place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+Issues and pull requests are welcome.
 
-If you have a suggestion that would improve the project, fork the repository and create a pull request. You can also open an issue with the `enhancement` tag.
-
-1. Fork the project.
-2. Create your feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-4. Push to the branch: `git push origin feature/AmazingFeature`
-5. Open a pull request.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
+If you change public helpers or extension methods, please update tests together with the code.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See [LICENSE.txt](LICENSE.txt).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+## Links
 
-## Contact
-
-Nguyen Quoc Dat - [@NguyenQuocDat1989](https://www.facebook.com/NguyenQuocDat1989)
-
-Project Link: [https://github.com/dattiphu2022/MrDHelper](https://github.com/dattiphu2022/MrDHelper)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Acknowledgments
-
-Helpful resources used by this project:
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-[contributors-shield]: https://img.shields.io/github/contributors/dattiphu2022/MrDHelper?style=for-the-badge
-[contributors-url]: https://github.com/dattiphu2022/MrDHelper/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/dattiphu2022/MrDHelper?style=for-the-badge
-[forks-url]: https://github.com/dattiphu2022/MrDHelper/network/members
-[stars-shield]: https://img.shields.io/github/stars/dattiphu2022/MrDHelper?style=for-the-badge
-[stars-url]: https://github.com/dattiphu2022/MrDHelper/stargazers
-[issues-shield]: https://img.shields.io/github/issues/dattiphu2022/MrDHelper?style=for-the-badge
-[issues-url]: https://github.com/dattiphu2022/MrDHelper/issues
-[license-shield]: https://img.shields.io/github/license/dattiphu2022/MrDHelper?style=for-the-badge
-[license-url]: https://github.com/dattiphu2022/MrDHelper/blob/master/LICENSE.txt
-[nugetdownload-shield]: https://img.shields.io/nuget/dt/MrDHelper?style=for-the-badge
-[nugetdownload-url]: https://www.nuget.org/packages/MrDHelper
-[nugetversion-shield]: https://img.shields.io/nuget/v/MrDHelper?style=for-the-badge
-[nugetversion-url]: https://www.nuget.org/packages/MrDHelper#versions-body-tab
+- NuGet: [MrDHelper](https://www.nuget.org/packages/MrDHelper)
+- Repository: [dattiphu2022/MrDHelper](https://github.com/dattiphu2022/MrDHelper)
