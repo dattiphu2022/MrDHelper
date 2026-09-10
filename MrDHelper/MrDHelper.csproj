@@ -14,12 +14,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>extension; extensions; helper; helpers; mrdhelper</PackageTags>
     <PackageReleaseNotes>
-      Fixing bugs
+      Update security-sensitive dependencies for MailKit, ASP.NET Core Identity, and SQLite.
     </PackageReleaseNotes>
     <Authors>Nguyen Quoc Dat</Authors>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>3.0</Version>
+    <Version>3.1</Version>
     <Platforms>AnyCPU</Platforms>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -45,11 +45,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="[4.15.1]" />
+    <PackageReference Include="MailKit" Version="[4.16.0]" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[9.0.14]" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[9.0.14]" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="[9.0.14]" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="[2.3.9]" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="[2.1.13]" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="[2.3.12]" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="[9.0.14]" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="[5.0.0]" />
     <PackageReference Include="System.Text.Json" Version="[9.0.14]" />
